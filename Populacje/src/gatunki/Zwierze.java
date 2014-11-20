@@ -1,12 +1,10 @@
 package gatunki;
 
-import java.util.BitSet;
-
 public abstract class Zwierze {
 
     private int _wiek;
     private int _aktywneMutacje;
-    private BitSet _genom;
+    private Genom _genom;
     private int _zdrowie;
 
     final public void setWiek(int _wiek) {
@@ -25,13 +23,11 @@ public abstract class Zwierze {
         return _aktywneMutacje;
     }
 
-    final protected void setGenom(BitSet _genom) {
-        if (this._genom == null) {
-            this._genom = _genom;
-        } 
+    final protected void setGenom(int length) {
+        this._genom = new Genom(length);
     }
 
-    final public BitSet getGenom() {
+    final public Genom getGenom() {
         return _genom;
     }
 

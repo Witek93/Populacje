@@ -1,15 +1,14 @@
 package gatunki;
 
-import java.util.BitSet;
-
-
 public class Krolik extends Zwierze {
+    final private static int WIEK_PLODNY = 5;
 
     public Krolik() {
         setWiek(0);
         setAktywneMutacje(0);
-        setGenom(new BitSet(8));
+        setGenom(64);
         setZdrowie(10);
     }
-    
+
+
 }
