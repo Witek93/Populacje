@@ -2,9 +2,9 @@ package populacje;
 
 import java.util.LinkedList;
 import java.util.List;
-import populacje.gatunki.Krolik;
-import populacje.gatunki.Wilk;
-import populacje.gatunki.Zwierze;
+import gatunki.Krolik;
+import gatunki.Wilk;
+import gatunki.Zwierze;
 
 
 public class Symulacja {

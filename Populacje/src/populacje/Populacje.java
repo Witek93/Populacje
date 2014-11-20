@@ -1,7 +1,7 @@
 package populacje;
 
-import populacje.gatunki.Krolik;
-import populacje.gatunki.Zwierze;
+import gatunki.Krolik;
+import gatunki.Zwierze;
 
 
 
