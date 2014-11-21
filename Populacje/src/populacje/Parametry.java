@@ -1,32 +1,25 @@
 package populacje;
 
-import populacje.wyjatki.UjemnaIloscZwierzatException;
-import populacje.wyjatki.ZaMaloJedzeniaException;
-
 public class Parametry {
 
     private int _iloscKrolikow;
     private int _iloscWilkow;
-    private int _iloscJedzeniaDlaKrolikow;
-    private int _iloscJedzeniaDlaWilkow;
+    private int _szerokoscMapy;
+    private int _wysokoscMapy;
 
-    public Parametry(int iloscKrolikow, int iloscWilkow, int iloscJedzeniaDlaKrolikow, int iloscJedzeniaDlaWilkow)
-            throws Exception {
-        waliduj(iloscKrolikow, iloscWilkow, iloscJedzeniaDlaKrolikow, iloscJedzeniaDlaWilkow);
+    public Parametry(int iloscKrolikow, int iloscWilkow, int szerokoscMapy, int wysokoscMapy) {
         setIloscKrolikow(iloscKrolikow);
         setIloscWilkow(iloscWilkow);
-        setIloscJedzeniaDlaKrolikow(iloscJedzeniaDlaKrolikow);
-        setIloscJedzeniaDlaWilkow(iloscJedzeniaDlaWilkow);
+        setSzerokoscMapy(szerokoscMapy);
+        setWysokoscMapy(wysokoscMapy);
     }
 
-    private void waliduj(int liczbaKrolikow, int liczbaWilkow, int iloscJedzeniaDlaKrolikow, int iloscJedzeniaDlaWilkow)
-            throws Exception {
-        if (liczbaKrolikow < 0 || liczbaWilkow < 0) {
-            throw new UjemnaIloscZwierzatException();
-        }
-        if (iloscJedzeniaDlaKrolikow < 0 || iloscJedzeniaDlaWilkow < 0) {
-            throw new ZaMaloJedzeniaException();
-        }
+    public int getMaxKrolikow() {
+        return (int) (getSzerokoscMapy() * getWysokoscMapy() * 0.5);
+    }
+
+    public int getMaxWilkow() {
+        return (int) (getSzerokoscMapy() * getWysokoscMapy() * 0.2);
     }
 
     final public void setIloscKrolikow(int iloscKrolikow) {
@@ -45,20 +38,20 @@ public class Parametry {
         return _iloscWilkow;
     }
 
-    final public void setIloscJedzeniaDlaKrolikow(int iloscJedzeniaDlaKrolikow) {
-        this._iloscJedzeniaDlaKrolikow = iloscJedzeniaDlaKrolikow;
+    final public void setSzerokoscMapy(int _szerokoscMapy) {
+        this._szerokoscMapy = _szerokoscMapy;
     }
 
-    public int getIloscJedzeniaDlaKrolikow() {
-        return _iloscJedzeniaDlaKrolikow;
+    public int getSzerokoscMapy() {
+        return _szerokoscMapy;
     }
 
-    final public void setIloscJedzeniaDlaWilkow(int iloscJedzeniaDlaWilkow) {
-        this._iloscJedzeniaDlaWilkow = iloscJedzeniaDlaWilkow;
+    final public void setWysokoscMapy(int _wysokoscMapy) {
+        this._wysokoscMapy = _wysokoscMapy;
     }
 
-    public int getIloscJedzeniaDlaWilkow() {
-        return _iloscJedzeniaDlaWilkow;
+    public int getWysokoscMapy() {
+        return _wysokoscMapy;
     }
 
 }
