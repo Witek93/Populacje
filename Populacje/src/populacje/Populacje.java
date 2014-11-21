@@ -6,8 +6,10 @@ import mapa.Mapa;
 public class Populacje {
 
     public static void main(String[] args) throws InterruptedException {
-
-        Parametry parametry = new Parametry(100, 2, 20, 30);
+        // potrzebne, aby szerokość mapy mogła być większa niż 45
+        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+        
+        Parametry parametry = new Parametry(100, 2, 100, 100);
         Symulacja s = new Symulacja(parametry);
         Mapa mapa = new Mapa(parametry.getSzerokoscMapy(), parametry.getWysokoscMapy());
 

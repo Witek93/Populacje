@@ -7,6 +7,9 @@ public class Parametry {
     private int _szerokoscMapy;
     private int _wysokoscMapy;
 
+    public final int MAX_SZEROKOSC_MAPY = 100;
+    public final int MAX_WYSOKOSC_MAPY = 100;
+
     public Parametry(int iloscKrolikow, int iloscWilkow, int szerokoscMapy, int wysokoscMapy) {
         setIloscKrolikow(iloscKrolikow);
         setIloscWilkow(iloscWilkow);

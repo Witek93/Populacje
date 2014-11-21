@@ -55,10 +55,10 @@ public class OknoGlowne {
     private JPanel stworzPanelSuwakow() {
         JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
 
-        JSlider szerokosc = new SuwakParametru("Szerokość mapy", 35,
+        JSlider szerokosc = new SuwakParametru("Szerokość mapy", parametry.MAX_SZEROKOSC_MAPY,
                 parametry.getSzerokoscMapy());
 
-        JSlider wysokosc = new SuwakParametru("Wysokość mapy", 45,
+        JSlider wysokosc = new SuwakParametru("Wysokość mapy", parametry.MAX_WYSOKOSC_MAPY,
                 parametry.getWysokoscMapy());
 
         JSlider ilosc_krolkow = new SuwakParametru("Ilość królików",
