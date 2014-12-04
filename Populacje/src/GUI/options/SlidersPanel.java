@@ -33,12 +33,12 @@ public class SlidersPanel extends JPanel {
 
     private JSlider createRabbitsCountSlider() {
         JSlider slider = new SuwakParametru("Ilość królików",
-                Parameters.getInstance().getMaxRabbitsCount(),
-                Parameters.getInstance().getRabbitsCount());
+                Parameters.getMaxRabbitsCount(),
+                Parameters.getRabbitsCount());
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                Parameters.getInstance().setRabbitsCount(slider.getValue());
+                Parameters.setRabbitsCount(slider.getValue());
             }
         });
         return slider;
@@ -46,12 +46,12 @@ public class SlidersPanel extends JPanel {
 
     private JSlider createWolvesCountSlider() {
         JSlider slider = new SuwakParametru("Ilość wilków",
-                Parameters.getInstance().getMaxWolvesCount(),
-                Parameters.getInstance().getWolvesCount());
+                Parameters.getMaxWolvesCount(),
+                Parameters.getWolvesCount());
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                Parameters.getInstance().setWolvesCount(slider.getValue());
+                Parameters.setWolvesCount(slider.getValue());
             }
         });
         return slider;
@@ -59,14 +59,14 @@ public class SlidersPanel extends JPanel {
 
     private JSlider createMapWidthSlider() {
         JSlider slider = new SuwakParametru("Wysokość mapy",
-                Parameters.getInstance().MAP_MAX_WIDTH,
-                Parameters.getInstance().getMapWidth());
+                Parameters.MAP_MAX_WIDTH,
+                Parameters.getMapWidth());
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                Parameters.getInstance().setMapWidth(slider.getValue());
-                update(rabbitsCountSlider, Parameters.getInstance().getMaxRabbitsCount());
-                update(wolvesCountSlider, Parameters.getInstance().getMaxWolvesCount());
+                Parameters.setMapWidth(slider.getValue());
+                update(rabbitsCountSlider, Parameters.getMaxRabbitsCount());
+                update(wolvesCountSlider, Parameters.getMaxWolvesCount());
             }
         });
         return slider;
@@ -74,14 +74,14 @@ public class SlidersPanel extends JPanel {
 
     private JSlider createMapHeightSlider() {
         JSlider slider = new SuwakParametru("Szerokość mapy",
-                Parameters.getInstance().MAP_MAX_HEIGHT,
-                Parameters.getInstance().getMapHeight());
+                Parameters.MAP_MAX_HEIGHT,
+                Parameters.getMapHeight());
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                Parameters.getInstance().setMapHeight(slider.getValue());
-                update(rabbitsCountSlider, Parameters.getInstance().getMaxRabbitsCount());
-                update(wolvesCountSlider, Parameters.getInstance().getMaxWolvesCount());
+                Parameters.setMapHeight(slider.getValue());
+                update(rabbitsCountSlider, Parameters.getMaxRabbitsCount());
+                update(wolvesCountSlider, Parameters.getMaxWolvesCount());
             }
         });
         return slider;

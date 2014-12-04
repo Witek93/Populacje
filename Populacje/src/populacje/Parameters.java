@@ -4,117 +4,88 @@ import simulations.RandomSimulation;
 
 public class Parameters {
 
-    private static volatile Parameters instance = null;
-
-    private static int currentRabbitsCount;
-    private static int rabbitsCount;
-    private static int currentWolvesCount;
-    private static int wolvesCount;
-    private static int currentMapWidth;
-    private static int mapWidth;
-    private static int currentMapHeight;
-    private static int mapHeight;
-    private static boolean started, resetSimulation;
-    private static Runnable algorithm;
+    private static int currentRabbitsCount = 10, rabbitsCount = 10;
+    private static int currentWolvesCount = 2, wolvesCount = 2;
+    private static int currentMapWidth = 15, mapWidth = 15;
+    private static int currentMapHeight = 25, mapHeight = 25;
+    private static boolean started = false, resetSimulation = true;
+    private static Runnable algorithm = new RandomSimulation();
 
     public static final int MAP_MAX_WIDTH = 50;
     public static final int MAP_MAX_HEIGHT = 50;
 
     private Parameters() {
-    }
-
-    private Parameters(int rabbitsCount, int wolvesCount, int mapWidth,
-            int mapHeight, boolean isStarted, Runnable algorithm) {
-        Parameters.currentRabbitsCount = rabbitsCount;
-        Parameters.rabbitsCount = rabbitsCount;
-        Parameters.currentWolvesCount = wolvesCount;
-        Parameters.wolvesCount = wolvesCount;
-        Parameters.currentMapWidth = mapWidth;
-        Parameters.mapWidth = mapWidth;
-        Parameters.currentMapHeight = mapHeight;
-        Parameters.mapHeight = mapHeight;
-        Parameters.started = isStarted;
-        Parameters.algorithm = algorithm;
-        Parameters.resetSimulation = true;
-    }
-
-    public static Parameters getInstance() {
-        synchronized (Parameters.class) {
-            if (instance == null) {
-                instance = new Parameters(10, 2, 15, 25, false, new RandomSimulation());
-            }
-        }
-        return instance;
+        //to avoid making any instances of class Parameters
     }
 
     public static void update() {
-        currentMapHeight = mapHeight;
-        currentMapWidth = mapWidth;
-        currentRabbitsCount = rabbitsCount;
-        currentWolvesCount = wolvesCount;
+        Parameters.currentMapHeight = mapHeight;
+        Parameters.currentMapWidth = mapWidth;
+        Parameters.currentRabbitsCount = rabbitsCount;
+        Parameters.currentWolvesCount = wolvesCount;
     }
 
-    public int getMaxRabbitsCount() {
+    public static int getMaxRabbitsCount() {
         return (int) (getMapWidth() * getMapHeight() * 0.5);
     }
 
-    public int getMaxWolvesCount() {
-        return (int) (getMapWidth() * getMapHeight() * 0.2);
+    public static int getMaxWolvesCount() {
+        return (int) (getMapWidth() * getMapHeight() * 0.5);
     }
 
-    final public void setRabbitsCount(int rabbitsCount) {
+    public static void setRabbitsCount(int rabbitsCount) {
         Parameters.rabbitsCount = rabbitsCount;
     }
 
-    public int getRabbitsCount() {
-        return currentRabbitsCount;
+    public static int getRabbitsCount() {
+        return Parameters.currentRabbitsCount;
     }
 
-    final public void setWolvesCount(int wolvesCount) {
+    public static void setWolvesCount(int wolvesCount) {
         Parameters.wolvesCount = wolvesCount;
     }
 
-    public int getWolvesCount() {
-        return currentWolvesCount;
+    public static int getWolvesCount() {
+        return Parameters.currentWolvesCount;
     }
 
-    final public void setMapWidth(int mapWidth) {
+    public static void setMapWidth(int mapWidth) {
         Parameters.mapWidth = mapWidth;
     }
 
-    public int getMapWidth() {
-        return currentMapWidth;
+    public static int getMapWidth() {
+        return Parameters.currentMapWidth;
     }
 
-    final public void setMapHeight(int mapHeight) {
+    public static void setMapHeight(int mapHeight) {
         Parameters.mapHeight = mapHeight;
     }
 
-    public int getMapHeight() {
-        return currentMapHeight;
+    public static int getMapHeight() {
+        return Parameters.currentMapHeight;
     }
 
-    final public void setStarted(boolean isStarted) {
+    public static void setStarted(boolean isStarted) {
         Parameters.started = isStarted;
     }
 
-    public boolean isStarted() {
-        return started;
+    public static boolean isStarted() {
+        return Parameters.started;
     }
 
     public static Runnable getAlgorithm() {
-        return algorithm;
+        return Parameters.algorithm;
     }
 
     public static void setAlgorithm(Runnable algorithm) {
         Parameters.algorithm = algorithm;
     }
 
-    public boolean wasResetPressed() {
-        return resetSimulation;
+    public static boolean wasResetPressed() {
+        return Parameters.resetSimulation;
     }
 
-    public void setReset(boolean value) {
+    public static void setReset(boolean value) {
         Parameters.resetSimulation = value;
     }
 

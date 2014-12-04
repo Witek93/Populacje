@@ -21,8 +21,8 @@ public class MapPanel extends JPanel {
         super();
 
         this.setLayout(new GridLayout(
-                Parameters.getInstance().getMapWidth(),
-                Parameters.getInstance().getMapHeight()));
+                Parameters.getMapWidth(),
+                Parameters.getMapHeight()));
         this.setMinimumSize(new Dimension(200, 200));
 
         initWithEmptyFields();
@@ -62,16 +62,16 @@ public class MapPanel extends JPanel {
     }
 
     private void updateField(int x, int y) {
-        int index = x * Parameters.getInstance().getMapHeight() + y;
+        int index = x * Parameters.getMapHeight() + y;
         MapPanel.getInstance().remove(index);
         MapPanel.getInstance().add(MapPanel.getInstance().getField(x, y), index);
     }
 
     private void initWithEmptyFields() {
-        MapPanel.fields = new Field[Parameters.getInstance().getMapWidth()][];
-        for (int i = 0; i < Parameters.getInstance().getMapWidth(); i++) {
-            MapPanel.fields[i] = new Field[Parameters.getInstance().getMapHeight()];
-            for (int j = 0; j < Parameters.getInstance().getMapHeight(); j++) {
+        MapPanel.fields = new Field[Parameters.getMapWidth()][];
+        for (int i = 0; i < Parameters.getMapWidth(); i++) {
+            MapPanel.fields[i] = new Field[Parameters.getMapHeight()];
+            for (int j = 0; j < Parameters.getMapHeight(); j++) {
                 MapPanel.fields[i][j] = new EmptyField();
                 this.add(MapPanel.fields[i][j]);
             }

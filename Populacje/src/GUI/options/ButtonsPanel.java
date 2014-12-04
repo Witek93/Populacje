@@ -28,12 +28,12 @@ public class ButtonsPanel extends JPanel {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (Parameters.getInstance().isStarted()) {
+                if (Parameters.isStarted()) {
                     button.setText("Start");
-                    Parameters.getInstance().setStarted(false);
+                    Parameters.setStarted(false);
                 } else {
                     button.setText("Pauza");
-                    Parameters.getInstance().setStarted(true);
+                    Parameters.setStarted(true);
                 }
             }
         });
@@ -46,10 +46,9 @@ public class ButtonsPanel extends JPanel {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Resetuj");
-                Parameters.getInstance().setReset(true);
+                Parameters.setReset(true);
                 startPauseButton.setText("Start");
-                Parameters.getInstance().setStarted(false);
+                Parameters.setStarted(false);
             }
         });
 

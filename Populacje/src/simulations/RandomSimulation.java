@@ -32,13 +32,18 @@ public class RandomSimulation implements Algorithm, Runnable {
     private HashMap<Point, Animal> random() {
         HashMap<Point, Animal> result = new HashMap<>();
         ArrayList<Point> points = getAvailableSpacePoints();
+        int index;
 
-        for (int i = 0; i < Parameters.getInstance().getRabbitsCount(); i++) {
-            result.put(points.get(generator.nextInt(points.size())), new Rabbit());
+        for (int i = 0; i < Parameters.getRabbitsCount(); i++) {
+            index = generator.nextInt(points.size());
+            result.put(points.get(index), new Rabbit());
+            points.remove(index);
         }
 
-        for (int i = 0; i < Parameters.getInstance().getWolvesCount(); i++) {
-            result.put(points.get(generator.nextInt(points.size())), new Wolf());
+        for (int i = 0; i < Parameters.getWolvesCount(); i++) {
+            index = generator.nextInt(points.size());
+            result.put(points.get(index), new Wolf());
+            points.remove(index);
         }
 
         return result;
@@ -46,8 +51,8 @@ public class RandomSimulation implements Algorithm, Runnable {
 
     private ArrayList<Point> getAvailableSpacePoints() {
         ArrayList<Point> points = new ArrayList<>();
-        for (int i = 0; i < Parameters.getInstance().getMapWidth(); i++) {
-            for (int j = 0; j < Parameters.getInstance().getMapHeight(); j++) {
+        for (int i = 0; i < Parameters.getMapWidth(); i++) {
+            for (int j = 0; j < Parameters.getMapHeight(); j++) {
                 points.add(new Point(i, j));
             }
         }
@@ -56,8 +61,8 @@ public class RandomSimulation implements Algorithm, Runnable {
 
     private void updatePlot(int i) {
         synchronized (Plot.class) {
-            Plot.getInstance().getSeries("króliki").add(i, Parameters.getInstance().getRabbitsCount());
-            Plot.getInstance().getSeries("wilki").add(i, Parameters.getInstance().getWolvesCount());
+            Plot.getInstance().getSeries("króliki").add(i, Parameters.getRabbitsCount());
+            Plot.getInstance().getSeries("wilki").add(i, Parameters.getWolvesCount());
         }
     }
 
@@ -66,7 +71,7 @@ public class RandomSimulation implements Algorithm, Runnable {
         initEnvironment();
 
         for (int i = 0;;) {
-            if (Parameters.getInstance().isStarted()) {
+            if (Parameters.isStarted()) {
                 updatePlot(i);
                 Thread.sleep(100);
                 i++;
