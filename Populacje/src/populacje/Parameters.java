@@ -17,8 +17,8 @@ public class Parameters {
     private static boolean started, resetSimulation;
     private static Runnable algorithm;
 
-    public static final int MAP_MAX_WIDTH = 100;
-    public static final int MAP_MAX_HEIGHT = 100;
+    public static final int MAP_MAX_WIDTH = 50;
+    public static final int MAP_MAX_HEIGHT = 50;
 
     private Parameters() {
     }
