@@ -6,6 +6,7 @@ import GUI.plots.Plot;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,11 +26,11 @@ public class RandomSimulation implements Algorithm, Runnable {
         Parameters.update();
         Plot.reset();
         MapPanel.reset();
-        MapPanel.getInstance().setAnimalFields(this.random());
+        MapPanel.getInstance().setAnimalFields(initRandomly());
         SimulationViewPanel.getInstance().updateComponents();
     }
 
-    private HashMap<Point, Animal> random() {
+    private HashMap<Point, Animal> initRandomly() {
         HashMap<Point, Animal> result = new HashMap<>();
         ArrayList<Point> points = getAvailableSpacePoints();
         int index;
@@ -68,7 +69,10 @@ public class RandomSimulation implements Algorithm, Runnable {
 
     @Override
     public void simulate() {
-        
+        List<Point> animalCords = MapPanel.getInstance().getAnimals();
+        for (Point point : animalCords) {
+            MapPanel.getInstance().moveAnimal(point.x, point.y, MapPanel.Direction.SOUTH);
+        }
     }
 
     @Override
@@ -79,7 +83,9 @@ public class RandomSimulation implements Algorithm, Runnable {
             for (int i = 0;;) {
                 if (Parameters.isStarted()) {
                     updatePlot(i);
-                    Thread.sleep(100);
+                    simulate();
+                    SimulationViewPanel.getInstance().repaintMapPanel();
+                    Thread.sleep(500);
                     i++;
                 } else {
                     Thread.sleep(10);

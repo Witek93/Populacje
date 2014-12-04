@@ -3,7 +3,9 @@ package GUI;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import javax.swing.JPanel;
 import map.AnimalField;
@@ -53,6 +55,18 @@ public class MapPanel extends JPanel {
         }
     }
 
+    public List<Point> getAnimals() {
+        ArrayList<Point> animals = new ArrayList<>();
+        for (int i = 0; i < Parameters.getMapWidth(); i++) {
+            for (int j = 0; j < Parameters.getMapHeight(); j++) {
+                if (!isEmptyField(i, j)) {
+                    animals.add(new Point(i, j));
+                }
+            }
+        }
+        return animals;
+    }
+
     private static void setField(int x, int y, Animal animal) {
         MapPanel.fields[x][y] = new AnimalField(animal);
     }
@@ -87,19 +101,24 @@ public class MapPanel extends JPanel {
     }
 
     public void moveAnimal(int x, int y, Direction d) {
-        if (!isEmptyField(x, y) && isEmptyField(x + d.x, y + d.y)) {
-            setField(x + d.x, y + d.y, ((AnimalField) getField(x, y)).getCurrentSpecies());
-            updateField(x + d.x, y + d.y);
+        if (x + d.x >= 0 && x + d.x < Parameters.getMapWidth()
+                && y + d.y >= 0 && y + d.y < Parameters.getMapHeight()) {
+            if (!isEmptyField(x, y) && isEmptyField(x + d.x, y + d.y)) {
+                setField(x + d.x, y + d.y, ((AnimalField) getField(x, y)).getCurrentSpecies());
+                updateField(x + d.x, y + d.y);
 
-            setEmptyField(x, y);
-            updateField(x, y);
+                setEmptyField(x, y);
+                updateField(x, y);
+            }
         }
-
     }
 
     public enum Direction {
 
-        NORTH(0, -1);
+        NORTH(0, -1),
+        SOUTH(1, 0),
+        WEST(-1, 0),
+        EAST(1, 0);
 
         private Direction(int x, int y) {
             this.x = x;

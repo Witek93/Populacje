@@ -29,4 +29,8 @@ public final class SimulationViewPanel extends JSplitPane {
         this.setBottomComponent(Plot.getInstance());
     }
 
+    public void repaintMapPanel() {
+        this.getTopComponent().revalidate();
+    }
+
 }
