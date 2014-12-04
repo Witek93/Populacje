@@ -23,10 +23,11 @@ public class SimulationSplitPane extends JSplitPane implements Runnable {
 
     @Override
     public void run() {
-        Thread thread = null;
+        Thread thread = new Thread(Parameters.getAlgorithm());
 
         while (true) {
             if (Parameters.getInstance().wasResetPressed()) {
+                thread.stop();
                 thread = new Thread(Parameters.getAlgorithm());
                 thread.start();
                 Parameters.getInstance().setReset(false);
