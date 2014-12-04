@@ -1,18 +1,17 @@
-package GUI;
+package map;
 
 import java.awt.Color;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
-import mapa.Pole;
 
-public class PoleMapy extends JPanel {
 
-    Pole _pole;
+public abstract class Field extends JPanel {
 
-    public PoleMapy(Pole _pole) {
+    public Field() {
         super();
-        this._pole = _pole;
         this.setBorder(new LineBorder(Color.white, 1));
     }
-
+    
+    
+    
 }
