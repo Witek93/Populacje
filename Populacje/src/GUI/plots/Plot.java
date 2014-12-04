@@ -7,71 +7,59 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 public class Plot extends ChartPanel {
 
-    static private volatile Plot instance;
+    static private volatile Plot instance = null;
 
-    private JFreeChart lineChart;
+    private final JFreeChart lineChart;
     private final XYSeriesCollection seriesCollection;
-    private final Map<String, Series> series;
+    private final Map<String, XYSeries> seriesMap;
 
     private Plot(String x_label, String y_label) {
         super(null);
-        this.series = new HashMap<>();
+        this.seriesMap = new HashMap<>();
         this.seriesCollection = new XYSeriesCollection();
-        init(x_label, y_label);
-        this.initSeries();
-        System.out.println("konstruktor Plot()");
-    }
 
-    private void initSeries() {
         this.addSeries("Populacja królików", "króliki");
         this.addSeries("Populacja wilków", "wilki");
+
+        this.lineChart = ChartFactory.createXYLineChart(null, x_label, y_label,
+                this.seriesCollection, PlotOrientation.VERTICAL, true, true, false);
+
+        init();
     }
 
     public static Plot getInstance() {
-        if (instance == null) {
-            synchronized (Plot.class) {
-                if (instance == null) {
-                    instance = new Plot("czas", "liczebność");
-                }
-            }
+        if (Plot.instance == null) {
+            reset();
         }
-        return instance;
+        return Plot.instance;
     }
 
     public static void reset() {
         synchronized (Plot.class) {
-            instance = new Plot("czas", "liczebność");
-            instance.getSeriesCollection().removeAllSeries();
-            instance.series.clear();
-            instance.initSeries();
+            Plot.instance = new Plot("czas", "liczebność");
         }
     }
 
-    private void init(String x_label, String y_label) {
-        lineChart = ChartFactory.createXYLineChart(null, x_label, y_label,
-                getSeriesCollection(), PlotOrientation.VERTICAL, true, true, false);
-
-        this.setChart(lineChart);
+    private void init() {
+        this.removeAll();
+        this.setChart(this.lineChart);
         this.setMinimumSize(new Dimension(200, 200));
         this.setSize(400, 300);
     }
 
     public final void addSeries(String series_name, String identifier) {
-        Series newSeries = new Series(series_name);
-        this.series.put(identifier, newSeries);
-        getSeriesCollection().addSeries(newSeries.getXYSeries());
+        XYSeries newSeries = new XYSeries(series_name);
+        this.seriesMap.put(identifier, newSeries);
+        this.seriesCollection.addSeries(newSeries);
     }
 
-    public final XYSeriesCollection getSeriesCollection() {
-        return this.seriesCollection;
-    }
-
-    public Series getSeries(String key) {
-        return this.series.get(key);
+    public XYSeries getSeries(String key) {
+        return this.seriesMap.get(key);
     }
 
 }

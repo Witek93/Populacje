@@ -55,8 +55,10 @@ public class RandomSimulation implements Algorithm, Runnable {
     }
 
     private void updatePlot(int i) {
-        Plot.getInstance().getSeries("króliki").appendPoint(i, Parameters.getInstance().getRabbitsCount());
-        Plot.getInstance().getSeries("wilki").appendPoint(i, Parameters.getInstance().getWolvesCount());
+        synchronized (Plot.class) {
+            Plot.getInstance().getSeries("króliki").add(i, Parameters.getInstance().getRabbitsCount());
+            Plot.getInstance().getSeries("wilki").add(i, Parameters.getInstance().getWolvesCount());
+        }
     }
 
     @Override
@@ -66,10 +68,10 @@ public class RandomSimulation implements Algorithm, Runnable {
         for (int i = 0;;) {
             if (Parameters.getInstance().isStarted()) {
                 updatePlot(i);
-                Thread.sleep(1000);
+                Thread.sleep(100);
                 i++;
             } else {
-                Thread.sleep(100);
+                Thread.sleep(10);
             }
         }
     }

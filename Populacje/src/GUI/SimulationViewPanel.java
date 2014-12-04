@@ -25,7 +25,6 @@ public final class SimulationViewPanel extends JSplitPane {
     }
 
     public void updateComponents() {
-        this.removeAll();
         this.setTopComponent(MapPanel.getInstance());
         this.setBottomComponent(Plot.getInstance());
     }

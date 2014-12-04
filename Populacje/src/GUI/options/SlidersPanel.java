@@ -32,22 +32,34 @@ public class SlidersPanel extends JPanel {
     }
 
     private JSlider createRabbitsCountSlider() {
-        JSlider ilosc_krolikow = new SuwakParametru("Ilość królików",
+        JSlider slider = new SuwakParametru("Ilość królików",
                 Parameters.getInstance().getMaxRabbitsCount(),
                 Parameters.getInstance().getRabbitsCount());
-        return ilosc_krolikow;
+        slider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                Parameters.getInstance().setRabbitsCount(slider.getValue());
+            }
+        });
+        return slider;
     }
 
     private JSlider createWolvesCountSlider() {
-        JSlider ilosc_wilkow = new SuwakParametru("Ilość wilków",
+        JSlider slider = new SuwakParametru("Ilość wilków",
                 Parameters.getInstance().getMaxWolvesCount(),
                 Parameters.getInstance().getWolvesCount());
-        return ilosc_wilkow;
+        slider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                Parameters.getInstance().setWolvesCount(slider.getValue());
+            }
+        });
+        return slider;
     }
 
     private JSlider createMapWidthSlider() {
         JSlider slider = new SuwakParametru("Wysokość mapy",
-                Parameters.getInstance().MAP_MAX_WIDTH, 
+                Parameters.getInstance().MAP_MAX_WIDTH,
                 Parameters.getInstance().getMapWidth());
         slider.addChangeListener(new ChangeListener() {
             @Override
@@ -62,7 +74,7 @@ public class SlidersPanel extends JPanel {
 
     private JSlider createMapHeightSlider() {
         JSlider slider = new SuwakParametru("Szerokość mapy",
-                Parameters.getInstance().MAP_MAX_HEIGHT, 
+                Parameters.getInstance().MAP_MAX_HEIGHT,
                 Parameters.getInstance().getMapHeight());
         slider.addChangeListener(new ChangeListener() {
             @Override

@@ -42,7 +42,6 @@ public class MapPanel extends JPanel {
     public static void reset() {
         synchronized (MapPanel.class) {
             instance = new MapPanel();
-            System.err.println("Component count: " + instance.getComponentCount());
         }
     }
 
