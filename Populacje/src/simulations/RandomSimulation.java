@@ -67,24 +67,24 @@ public class RandomSimulation implements Algorithm, Runnable {
     }
 
     @Override
-    public void simulate() throws InterruptedException {
-        initEnvironment();
-
-        for (int i = 0;;) {
-            if (Parameters.isStarted()) {
-                updatePlot(i);
-                Thread.sleep(100);
-                i++;
-            } else {
-                Thread.sleep(10);
-            }
-        }
+    public void simulate() {
+        
     }
 
     @Override
     public void run() {
         try {
-            simulate();
+            initEnvironment();
+
+            for (int i = 0;;) {
+                if (Parameters.isStarted()) {
+                    updatePlot(i);
+                    Thread.sleep(100);
+                    i++;
+                } else {
+                    Thread.sleep(10);
+                }
+            }
         } catch (InterruptedException ex) {
             Logger.getLogger(RandomSimulation.class.getName()).log(Level.SEVERE, null, ex);
         }
