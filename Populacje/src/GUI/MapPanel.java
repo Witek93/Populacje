@@ -13,6 +13,8 @@ import map.EmptyField;
 import map.Field;
 import populacje.Parameters;
 import species.Animal;
+import species.Rabbit;
+import species.Wolf;
 
 public class MapPanel extends JPanel {
 
@@ -67,6 +69,18 @@ public class MapPanel extends JPanel {
         return animals;
     }
 
+    public void removeAnimal(int x, int y) {
+        if (isRabbit(x, y)) {
+            Parameters.decCurrentRabbitsCount();
+        } else if (isWolf(x, y)) {
+            Parameters.decCurrentWolvesCount();
+        } else {
+            return;
+        }
+        setEmptyField(x, y);
+        updateField(x, y);
+    }
+
     private static void setField(int x, int y, Animal animal) {
         MapPanel.fields[x][y] = new AnimalField(animal);
     }
@@ -96,35 +110,85 @@ public class MapPanel extends JPanel {
         return MapPanel.fields[x][y] instanceof EmptyField;
     }
 
+    private boolean isRabbit(int x, int y) {
+        if (!isEmptyField(x, y)) {
+            if (((AnimalField) getField(x, y)).getCurrentSpecies() instanceof Rabbit) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isWolf(int x, int y) {
+        if (!isEmptyField(x, y)) {
+            if (((AnimalField) getField(x, y)).getCurrentSpecies() instanceof Wolf) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Field getField(int x, int y) {
         return MapPanel.fields[x][y];
     }
 
     public void moveAnimal(int x, int y, Direction d) {
-        if (x + d.x >= 0 && x + d.x < Parameters.getMapWidth()
-                && y + d.y >= 0 && y + d.y < Parameters.getMapHeight()) {
-            if (!isEmptyField(x, y) && isEmptyField(x + d.x, y + d.y)) {
-                setField(x + d.x, y + d.y, ((AnimalField) getField(x, y)).getCurrentSpecies());
-                updateField(x + d.x, y + d.y);
-
-                setEmptyField(x, y);
-                updateField(x, y);
+        if (checkContraints(x, y) && checkContraints(x + d.x, y + d.y)) {
+            if (!isEmptyField(x, y)) {
+                if (isEmptyField(x + d.x, y + d.y)) { // Animal -> Empty
+                    moveAnimalToEmptyField(x, y, d.x, d.y);
+                } else if (isWolf(x, y) && isRabbit(x + d.x, y + d.y)) { // Wolf -> Rabbit
+                    //TODO zjedz
+                    eatRabbit(x + d.x, y + d.y);
+                } else if (isRabbit(x, y) && isWolf(x + d.x, y + d.y)) { // Rabbit -> Wolf
+                    //TODO uciekaj
+                    runAway(x, y, d.x, d.y);
+                }
             }
         }
     }
 
+    private void runAway(int x, int y, int dx, int dy) {
+        if (checkContraints(x, y) && checkContraints(x - dx, y - dy)) {
+            if (isEmptyField(x - dx, y - dy)) {
+                moveAnimalToEmptyField(x, y, -dx, -dy);
+            }
+        }
+    }
+
+    private void eatRabbit(int x, int y) {
+        removeAnimal(x, y);
+    }
+
+    private boolean checkContraints(int x, int y) {
+        return x >= 0 && x < Parameters.getMapWidth()
+                && y >= 0 && y < Parameters.getMapHeight();
+    }
+
+    private void moveAnimalToEmptyField(int x, int y, int dx, int dy) {
+        setField(x + dx, y + dy, ((AnimalField) getField(x, y)).getCurrentSpecies());
+        updateField(x + dx, y + dy);
+        setEmptyField(x, y);
+        updateField(x, y);
+    }
+
     public enum Direction {
 
-        NORTH(0, -1),
+        NORTH(-1, 0),
         SOUTH(1, 0),
-        WEST(-1, 0),
-        EAST(1, 0);
+        EAST(0, 1),
+        WEST(0, -1),
+        NORTH_EAST(-1, 1),
+        NORTH_WEST(-1, -1),
+        SOUTH_EAST(1, 1),
+        SOUTH_WEST(1, -1);
 
         private Direction(int x, int y) {
             this.x = x;
             this.y = y;
         }
         int x, y;
+
     }
 
 }

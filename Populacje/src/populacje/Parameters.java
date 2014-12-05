@@ -49,6 +49,30 @@ public class Parameters {
         return Parameters.currentWolvesCount;
     }
 
+    public static int getCurrentRabbitsCount() {
+        return currentRabbitsCount;
+    }
+
+    public static void decCurrentRabbitsCount() {
+        Parameters.currentRabbitsCount--;
+    }
+
+    public static void decCurrentWolvesCount() {
+        Parameters.currentWolvesCount--;
+    }
+
+    public static void incCurrentRabbitsCount() {
+        Parameters.currentRabbitsCount++;
+    }
+
+    public static void incCurrentWolvesCount() {
+        Parameters.currentWolvesCount++;
+    }
+
+    public static int getCurrentWolvesCount() {
+        return currentWolvesCount;
+    }
+
     public static void setMapWidth(int mapWidth) {
         Parameters.mapWidth = mapWidth;
     }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import map.AnimalField;
 import populacje.Parameters;
 import species.Animal;
 import species.Rabbit;
@@ -18,6 +19,7 @@ import species.Wolf;
 public class RandomSimulation implements Algorithm, Runnable {
 
     final static private Random generator = new Random();
+    final static private MapPanel.Direction directions[] = MapPanel.Direction.values();
 
     public RandomSimulation() {
     }
@@ -70,9 +72,23 @@ public class RandomSimulation implements Algorithm, Runnable {
     @Override
     public void simulate() {
         List<Point> animalCords = MapPanel.getInstance().getAnimals();
-        for (Point point : animalCords) {
-            MapPanel.getInstance().moveAnimal(point.x, point.y, MapPanel.Direction.SOUTH);
+        for (Point p : animalCords) {
+            // zwiekszenie wieku w każdej iteracji aż do osiągnięcia maksymalnego 
+            // wieku zwierzęcia
+            if (!MapPanel.getInstance().isEmptyField(p.x, p.y)) {
+                Animal animal = ((AnimalField) MapPanel.getInstance().getField(p.x, p.y)).getCurrentSpecies();
+                animal.incAge();
+                if (animal.isDyingAge()) {
+                    MapPanel.getInstance().removeAnimal(p.x, p.y);
+                }
+            }
+            // poruszanie się zwierzat po mapie
+            MapPanel.getInstance().moveAnimal(p.x, p.y, randomDirection());
         }
+    }
+
+    private MapPanel.Direction randomDirection() {
+        return directions[generator.nextInt(directions.length)];
     }
 
     @Override

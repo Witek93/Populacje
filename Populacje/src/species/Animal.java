@@ -4,27 +4,26 @@ import java.awt.Color;
 
 public abstract class Animal {
 
-    protected double age;
-    protected int health;
+    protected int age;
+    protected int dyingAge;
+    protected int productiveAge;
 
     abstract public Color getColor();
 
-    abstract public int getProductiveAge();
-
-    final public void setAge(double age) {
-        this.age = age;
+    public boolean isProductiveAge() {
+        return getAge() >= productiveAge;
     }
 
-    final public double getAge() {
+    final public void incAge() {
+        this.age++;
+    }
+
+    final public int getAge() {
         return age;
     }
 
-    final public void setHealth(int health) {
-        this.health = health;
-    }
-
-    final public int getHealth() {
-        return health;
+    public boolean isDyingAge() {
+        return getAge() >= dyingAge;
     }
 
 }
