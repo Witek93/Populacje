@@ -2,38 +2,47 @@ package growingpopulations.model;
 
 public class SimulationOptions {
 
-    public volatile boolean canReproduce, canDie, canStarve;
+    private volatile boolean reproduce, randomlyDie, starve, growGrass;
 
     public SimulationOptions() {
         // if u want to set these values to false then implement some sort of 
         // initial communication for CheckBoxes in MenuBar (they are set to true)
-        this.canReproduce = true;
-        this.canDie = true;
-        this.canStarve = true;
+        this.reproduce = true;
+        this.randomlyDie = true;
+        this.starve = true;
+        this.growGrass = true;
     }
 
     public boolean canReproduce() {
-        return canReproduce;
+        return reproduce;
     }
 
     public void setCanReproduce(boolean canReproduce) {
-        this.canReproduce = canReproduce;
+        this.reproduce = canReproduce;
     }
 
-    public boolean canDie() {
-        return canDie;
+    public boolean canRandomlyDie() {
+        return randomlyDie;
     }
 
-    public void setCanDie(boolean canDie) {
-        this.canDie = canDie;
+    public void setRandomlyDie(boolean randomlyDie) {
+        this.randomlyDie = randomlyDie;
     }
 
     public boolean canStarve() {
-        return canStarve;
+        return starve;
     }
 
     public void setCanStarve(boolean canStarve) {
-        this.canStarve = canStarve;
+        this.starve = canStarve;
+    }
+
+    public boolean canGrowGrass() {
+        return growGrass;
+    }
+
+    public void setCanGrowGrass(boolean canGrowGrass) {
+        this.growGrass = canGrowGrass;
     }
 
 }

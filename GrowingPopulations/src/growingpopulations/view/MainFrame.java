@@ -67,26 +67,6 @@ public class MainFrame extends JFrame {
         return menu.getParametersFrame();
     }
 
-    public int getSimulationInterval() {
-        return getParametersFrame().getSimulationInterval();
-    }
-
-    public int getMapWidth() {
-        return getParametersFrame().getMapWidth();
-    }
-
-    public int getMapHeight() {
-        return getParametersFrame().getMapHeight();
-    }
-
-    public int getRabbitsCount() {
-        return getParametersFrame().getRabbitsCount();
-    }
-
-    public int getWolvesCount() {
-        return getParametersFrame().getWolvesCount();
-    }
-
     public MenuBarImplementation getMenu() {
         return menu;
     }

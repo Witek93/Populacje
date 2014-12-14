@@ -11,17 +11,19 @@ public class Controller {
 
     MainFrame view;
     Model model;
-    ActionListener updateListener, startListener, pauseListener;
+    UpdateListener updateListener;
+    ActionListener resetListener, startListener, pauseListener;
 
     public Controller(MainFrame view, Model model) {
         this.view = view;
         this.model = model;
         this.updateListener = new UpdateListener();
+        this.resetListener = new ResetListener();
         this.startListener = new StartListener();
         this.pauseListener = new PauseListener();
 
         this.view.getParametersFrame().addUpdateButtonListener(updateListener);
-        this.view.getMenu().addGenerateMenuItemListener(updateListener);
+        this.view.getParametersFrame().addResetButtonListener(resetListener);
 
         if (this.model.isStarted()) {
             this.view.addStartPauseButtonListener(startListener);
@@ -36,7 +38,7 @@ public class Controller {
                 this.model.getMapWidth(), this.model.getMapHeight());
     }
 
-    public void simulate() {
+    synchronized public void simulate() {
 //        if (this.model.getOptions().canDie) {
 //            this.model.getMap().dieRabbits();
 //            this.model.getMap().dieWolves();
@@ -62,36 +64,49 @@ public class Controller {
     }
 
     private void drawMap() {
-        List<Point> grass = this.model.getMap().getEmptyCoordinates();
-        List<Point> wolves = this.model.getMap().getWolvesCoordinates();
-        List<Point> rabbits = this.model.getMap().getRabbitsCoordinates();
-        this.view.getMapPanel().drawAll(grass, wolves, rabbits);
+        synchronized (Controller.class) {
+            List<Point> grass = this.model.getMap().getEmptyCoordinates();
+            List<Point> wolves = this.model.getMap().getWolvesCoordinates();
+            List<Point> rabbits = this.model.getMap().getRabbitsCoordinates();
+            this.view.getMapPanel().drawAll(grass, wolves, rabbits);
+        }
     }
 
     private class UpdateListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            updateParameters();
-            updateSimulationOptions();
-            model.initMap();
-            view.getMapPanel().generateMapPanel(model.getMapWidth(), model.getMapHeight());
-            drawMap();
-            view.getSplitPane().getTopComponent().repaint();
+            synchronized (Controller.class) {
+                updateParameters();
+            }
         }
 
         private void updateParameters() {
-            model.setSimulationInterval(view.getSimulationInterval());
-            model.setMapWidth(view.getMapWidth());
-            model.setMapHeight(view.getMapHeight());
-            model.setRabbitsCount(view.getRabbitsCount());
-            model.setWolvesCount(view.getWolvesCount());
+            model.setSimulationInterval(view.getParametersFrame().getSimulationInterval());
+            model.getFactors().setGrassGrowingRatio(view.getParametersFrame().getGrowGrassRatio());
         }
 
-        private void updateSimulationOptions() {
-            model.getOptions().setCanReproduce(view.getMenu().getReproducing());
-            model.getOptions().setCanDie(view.getMenu().getDying());
-            model.getOptions().setCanStarve(view.getMenu().getStarving());
+    }
+
+    private class ResetListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            synchronized (Controller.class) {
+                resetParameters();
+                view.getMapPanel().generateMapPanel(model.getMapWidth(), model.getMapHeight());
+                drawMap();
+                view.getSplitPane().getTopComponent().repaint();
+                updateListener.updateParameters();
+            }
+        }
+
+        public void resetParameters() {
+            model.setMapWidth(view.getParametersFrame().getMapWidth());
+            model.setMapHeight(view.getParametersFrame().getMapHeight());
+            model.setRabbitsCount(view.getParametersFrame().getRabbitsCount());
+            model.setWolvesCount(view.getParametersFrame().getWolvesCount());
+            model.initMap();
         }
 
     }

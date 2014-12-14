@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -13,54 +14,62 @@ import javax.swing.event.ChangeEvent;
 
 public class ParametersFrame extends JFrame {
 
-    private final JPanel mainPanel;
-    private final JButton updateButton;
-    private JSlider simulationInterval, rabbitsCount, wolvesCount, mapWidth, mapHeight;
-    private JSlider reproducingSlider, grassGrowingSlider, starvingSlider;
+    private final JButton updateButton, resetButton;
+    private JSlider rabbitsCount, wolvesCount, mapWidth, mapHeight;
+    private JSlider simulationInterval, growGrass;
+    private JSlider wolfReproduce, wolfRandomlyDie, wolfStarve;
+    private JSlider rabbitReproduce, rabbitRandomlyDie, rabbitStarve;
+    private JCheckBox reproduceCheckbox, starveCheckbox, dieCheckbox, growGrassCheckbox;
 
     public ParametersFrame() {
         super("Parametry symulacji");
-        this.mainPanel = new JPanel(new BorderLayout());
         this.updateButton = new JButton("Aktualizuj");
+        this.resetButton = new JButton("Resetuj");
 
-        JPanel simulationPanel = new JPanel(new GridLayout(0, 2));
-        simulationPanel.add(getParametersPanel());
-        simulationPanel.add(getFactorsPanel());
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 0));
+        JPanel simulationPanel = new JPanel(new GridLayout(1, 0));
+        JPanel parametersPanel = new JPanel(new GridLayout(2, 0));
+        JPanel ratiosPanel = new JPanel(new BorderLayout());
+        JPanel animalRatiosPanel = new JPanel(new GridLayout(2, 0));
 
-        mainPanel.add(updateButton, BorderLayout.SOUTH);
-        mainPanel.add(simulationPanel, BorderLayout.CENTER);
         this.add(mainPanel);
+        mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
+        buttonsPanel.add(updateButton);
+        buttonsPanel.add(resetButton);
+        mainPanel.add(simulationPanel, BorderLayout.CENTER);
+        simulationPanel.add(parametersPanel);
+        parametersPanel.add(resetPanel());
+        parametersPanel.add(updatePanel());
+        simulationPanel.add(ratiosPanel);
+        ratiosPanel.add(checkboxesPanel(), BorderLayout.NORTH);
+        ratiosPanel.add(animalRatiosPanel, BorderLayout.CENTER);
+        animalRatiosPanel.add(wolfRatio());
+        animalRatiosPanel.add(rabbitRatio());
 
         this.setLocation(800, 0);
-        this.setMinimumSize(new Dimension(500, 600));
+        this.setMinimumSize(new Dimension(500, 700));
     }
 
-    private JPanel getParametersPanel() {
+    private JPanel resetPanel() {
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.setBorder(new TitledBorder("Parametry"));
-
-        simulationInterval = createSlider(0, 3000);
-        simulationInterval.setBorder(new TitledBorder("Prędkość symulacji [ms]"));
 
         mapWidth = createSlider(5, 50);
         mapWidth.setBorder(new TitledBorder("Szerokość mapy"));
         mapWidth.addChangeListener((ChangeEvent e) -> {
             updateOnMapResize();
         });
-
         mapHeight = createSlider(5, 50);
         mapHeight.setBorder(new TitledBorder("Wysokość mapy"));
         mapHeight.addChangeListener((ChangeEvent e) -> {
             updateOnMapResize();
         });
-
         rabbitsCount = createSlider(0, calculateMaxRabbitCount());
         rabbitsCount.setBorder(new TitledBorder("Liczba królików"));
-
         wolvesCount = createSlider(0, calculateMaxWolvesCount());
         wolvesCount.setBorder(new TitledBorder("Liczba wilków"));
 
-        panel.add(simulationInterval);
         panel.add(mapWidth);
         panel.add(mapHeight);
         panel.add(rabbitsCount);
@@ -69,22 +78,71 @@ public class ParametersFrame extends JFrame {
         return panel;
     }
 
-    private JPanel getFactorsPanel() {
+    private JPanel updatePanel() {
         JPanel panel = new JPanel(new GridLayout(0, 1));
-        panel.setBorder(new TitledBorder("Wspołczynniki"));
 
-        reproducingSlider = createSlider(0, 100);
-        reproducingSlider.setBorder(new TitledBorder("Szansa rozmnożenia"));
+        simulationInterval = createSlider(0, 3000);
+        simulationInterval.setBorder(new TitledBorder("Prędkość symulacji [ms]"));
+        growGrass = createSlider(0, 100);
+        growGrass.setBorder(new TitledBorder("Procent wzrostu trawy"));
 
-        grassGrowingSlider = createSlider(0, 100);
-        grassGrowingSlider.setBorder(new TitledBorder("Procent wzrostu trawy"));
+        panel.add(simulationInterval);
+        panel.add(growGrass);
 
-        starvingSlider = createSlider(0, 100);
-        starvingSlider.setBorder(new TitledBorder("Wpływ głodu"));
+        return panel;
+    }
 
-        panel.add(reproducingSlider);
-        panel.add(grassGrowingSlider);
-        panel.add(starvingSlider);
+    private JPanel checkboxesPanel() {
+        JPanel panel = new JPanel(new GridLayout(0, 2));
+        panel.setBorder(new TitledBorder("Uwzględnij"));
+        reproduceCheckbox = new JCheckBox("rozmnażanie");
+        starveCheckbox = new JCheckBox("głód");
+        dieCheckbox = new JCheckBox("śmiertelność");
+        growGrassCheckbox = new JCheckBox("przyrost trawy");
+
+        panel.add(reproduceCheckbox);
+        panel.add(starveCheckbox);
+        panel.add(dieCheckbox);
+        panel.add(growGrassCheckbox);
+        return panel;
+    }
+
+    private JPanel wolfRatio() {
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.setBorder(new TitledBorder("Wilk"));
+
+        wolfReproduce = createSlider(0, 100);
+        wolfReproduce.setBorder(new TitledBorder("Szansa rozmnożenia"));
+
+        wolfRandomlyDie = createSlider(0, 100);
+        wolfRandomlyDie.setBorder(new TitledBorder("Szansa przypadkowej śmierci"));
+
+        wolfStarve = createSlider(0, 100);
+        wolfStarve.setBorder(new TitledBorder("Wpływ głodu"));
+
+        panel.add(wolfReproduce);
+        panel.add(wolfRandomlyDie);
+        panel.add(wolfStarve);
+
+        return panel;
+    }
+
+    private JPanel rabbitRatio() {
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.setBorder(new TitledBorder("Królik"));
+
+        rabbitReproduce = createSlider(0, 100);
+        rabbitReproduce.setBorder(new TitledBorder("Szansa rozmnożenia"));
+
+        rabbitRandomlyDie = createSlider(0, 100);
+        rabbitRandomlyDie.setBorder(new TitledBorder("Szansa przypadkowej śmierci"));
+
+        rabbitStarve = createSlider(0, 100);
+        rabbitStarve.setBorder(new TitledBorder("Wpływ głodu"));
+
+        panel.add(rabbitReproduce);
+        panel.add(rabbitRandomlyDie);
+        panel.add(rabbitStarve);
 
         return panel;
     }
@@ -99,6 +157,10 @@ public class ParametersFrame extends JFrame {
 
     public void addUpdateButtonListener(ActionListener listenForUpdate) {
         updateButton.addActionListener(listenForUpdate);
+    }
+
+    public void addResetButtonListener(ActionListener listerForReset) {
+        resetButton.addActionListener(listerForReset);
     }
 
     public void initSliderValues(int simulationInterval, int rabbitsCount, int wolvesCount,
@@ -131,10 +193,6 @@ public class ParametersFrame extends JFrame {
     }
 
     // ----------------------- getters & setters --------------------------
-    public int getSimulationInterval() {
-        return simulationInterval.getValue();
-    }
-
     public int getRabbitsCount() {
         return rabbitsCount.getValue();
     }
@@ -149,6 +207,38 @@ public class ParametersFrame extends JFrame {
 
     public int getMapHeight() {
         return mapHeight.getValue();
+    }
+
+    public int getSimulationInterval() {
+        return simulationInterval.getValue();
+    }
+
+    public double getWolfReproduceRatio() {
+        return wolfReproduce.getValue() * 0.01;
+    }
+
+    public double getWolfRandomlyDieRatio() {
+        return wolfRandomlyDie.getValue() * 0.01;
+    }
+
+    public double getWolfStarveRatio() {
+        return wolfStarve.getValue() * 0.01;
+    }
+
+    public double getRabbitReproduceRatio() {
+        return rabbitReproduce.getValue() * 0.01;
+    }
+
+    public double getRabbitRandomlyDieRatio() {
+        return rabbitRandomlyDie.getValue() * 0.01;
+    }
+
+    public double getRabbitStarveRatio() {
+        return rabbitStarve.getValue() * 0.01;
+    }
+
+    public double getGrowGrassRatio() {
+        return growGrass.getValue() * 0.01;
     }
 
 }
