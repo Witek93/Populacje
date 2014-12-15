@@ -13,12 +13,12 @@ public class Model {
     private WolvesRabbitsMap map;
 
     public Model() {
-        this.rabbitsCount = 10;
+        this.rabbitsCount = 3;
         this.wolvesCount = 2;
-        this.mapWidth = 20;
-        this.mapHeight = 25;
-        this.simulationInterval = 1000;
-        this.started = false;
+        this.mapWidth = 5;
+        this.mapHeight = 5;
+        this.simulationInterval = 300;
+        this.started = true;
         this.options = new SimulationOptions();
         this.factors = new SimulationFactors();
         initMap();
@@ -28,6 +28,7 @@ public class Model {
         this.map = new WolvesRabbitsMap(mapWidth, mapHeight, wolvesCount, rabbitsCount);
     }
 
+    // ----------------------- getters & setters -------------------------
     public int getSimulationInterval() {
         return simulationInterval;
     }

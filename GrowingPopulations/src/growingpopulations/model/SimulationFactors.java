@@ -2,20 +2,20 @@ package growingpopulations.model;
 
 public class SimulationFactors {
 
-    private double wolfReproducingRatio, wolfStarvingRatio, wolfEatingRatio;
-    private double rabbitReproducingRatio, rabbitStarvingRatio, rabbitEatingRatio;
-    private double grassGrowingRatio;
+    private double wolfReproducingRatio, wolfStarveRatio, wolfDieRatio;
+    private double rabbitReproducingRatio, rabbitStarveRatio, rabbitDieRatio;
+    private double growGrassRatio;
 
     public SimulationFactors() {
         this.wolfReproducingRatio = 0.1;
-        this.wolfStarvingRatio = 0.1;
-        this.wolfEatingRatio = 0.1;
+        this.wolfStarveRatio = 0.1;
+        this.wolfDieRatio = 0.1;
 
         this.rabbitReproducingRatio = 0.1;
-        this.rabbitStarvingRatio = 0.1;
-        this.rabbitEatingRatio = 0.1;
+        this.rabbitStarveRatio = 0.1;
+        this.rabbitDieRatio = 0.1;
 
-        this.grassGrowingRatio = 0.1;
+        this.growGrassRatio = 0.1;
     }
 
     public double getWolfReproducingRatio() {
@@ -26,20 +26,20 @@ public class SimulationFactors {
         this.wolfReproducingRatio = wolfReproducingRatio;
     }
 
-    public double getWolfStarvingRatio() {
-        return wolfStarvingRatio;
+    public double getWolfStarveRatio() {
+        return wolfStarveRatio;
     }
 
-    public void setWolfStarvingRatio(double wolfStarvingRatio) {
-        this.wolfStarvingRatio = wolfStarvingRatio;
+    public void setWolfStarveRatio(double wolfStarveRatio) {
+        this.wolfStarveRatio = wolfStarveRatio;
     }
 
-    public double getWolfEatingRatio() {
-        return wolfEatingRatio;
+    public double getWolfDieRatio() {
+        return wolfDieRatio;
     }
 
-    public void setWolfEatingRatio(double wolfEatingRatio) {
-        this.wolfEatingRatio = wolfEatingRatio;
+    public void setWolfDieRatio(double wolfDieRatio) {
+        this.wolfDieRatio = wolfDieRatio;
     }
 
     public double getRabbitReproducingRatio() {
@@ -50,28 +50,28 @@ public class SimulationFactors {
         this.rabbitReproducingRatio = rabbitReproducingRatio;
     }
 
-    public double getRabbitStarvingRatio() {
-        return rabbitStarvingRatio;
+    public double getRabbitStarveRatio() {
+        return rabbitStarveRatio;
     }
 
-    public void setRabbitStarvingRatio(double rabbitStarvingRatio) {
-        this.rabbitStarvingRatio = rabbitStarvingRatio;
+    public void setRabbitStarveRatio(double rabbitStarveRatio) {
+        this.rabbitStarveRatio = rabbitStarveRatio;
     }
 
-    public double getRabbitEatingRatio() {
-        return rabbitEatingRatio;
+    public double getRabbitDieRatio() {
+        return rabbitDieRatio;
     }
 
-    public void setRabbitEatingRatio(double rabbitEatingRatio) {
-        this.rabbitEatingRatio = rabbitEatingRatio;
+    public void setRabbitDieRatio(double rabbitDieRatio) {
+        this.rabbitDieRatio = rabbitDieRatio;
     }
 
-    public double getGrassGrowingRatio() {
-        return grassGrowingRatio;
+    public double getGrowGrassRatio() {
+        return growGrassRatio;
     }
 
-    public void setGrassGrowingRatio(double grassGrowingRatio) {
-        this.grassGrowingRatio = grassGrowingRatio;
+    public void setGrowGrassRatio(double growGrassRatio) {
+        this.growGrassRatio = growGrassRatio;
     }
 
 }

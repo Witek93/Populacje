@@ -26,13 +26,11 @@ public class GrowingPopulations implements Runnable {
 
     @Override
     public void run() {
-        for (int i = 0;;) {
+        while (true) {
             try {
                 while (this.model.isStarted()) {
                     this.controller.simulate();
-                    System.out.println("Iteration no: " + i);
                     Thread.sleep(this.model.getSimulationInterval());
-                    i++;
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(GrowingPopulations.class.getName()).log(Level.SEVERE, null, ex);

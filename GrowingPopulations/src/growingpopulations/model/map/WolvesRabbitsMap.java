@@ -1,8 +1,8 @@
 package growingpopulations.model.map;
 
-import growingpopulations.model.map.fields.Animal;
-import growingpopulations.model.map.fields.Rabbit;
-import growingpopulations.model.map.fields.Wolf;
+import growingpopulations.model.map.animals.Animal;
+import growingpopulations.model.map.animals.Rabbit;
+import growingpopulations.model.map.animals.Wolf;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,29 +22,39 @@ public class WolvesRabbitsMap {
         this.generator = new Random();
         this.wolvesCoordinates = new ArrayList<>(wolvesCount);
         this.rabbitsCoordinates = new ArrayList<>(rabbitsCount);
-        initFields();
-        initAnimals(wolvesCount, rabbitsCount);
+        initFields(wolvesCount, rabbitsCount);
     }
 
     public void simulate() {
-        simulateWolves();
         simulateRabbits();
+        simulateWolves();
     }
 
     private void simulateRabbits() {
-        List<Point> points = new ArrayList<>(rabbitsCoordinates);
+        Point[] points = rabbitsCoordinates.toArray(new Point[rabbitsCoordinates.size()]);
         for (Point p : points) {
-            //TODO
-            moveRabbit(p, randomDirection());
+            assert !isEmpty(p.x, p.y);
+            Animal animal = fields[p.x][p.y].getAnimal();
+            animal.incrementAge();
+            if (animal.shouldDie()) {
+                rabbitsCoordinates.remove(p);
+            } else {
+                moveRabbit(p, randomDirection());
+            }
         }
     }
 
     private void simulateWolves() {
-        List<Point> points = new ArrayList<>(wolvesCoordinates);
+        Point[] points = wolvesCoordinates.toArray(new Point[wolvesCoordinates.size()]);
         for (Point p : points) {
-            //TODO
-//            moveWolf(p.x, p.y, randomDirection());
-
+            assert !isEmpty(p.x, p.y);
+            Animal animal = fields[p.x][p.y].getAnimal();
+            animal.incrementAge();
+            if (animal.shouldDie()) {
+                wolvesCoordinates.remove(p);
+            } else {
+                moveWolf(p, randomDirection());
+            }
         }
     }
 
@@ -58,32 +68,45 @@ public class WolvesRabbitsMap {
 
     public void moveRabbit(Point p, Direction d) {
         if (isEmpty(p.x + d.x, p.y + d.y)) { // Rabbit -> Empty
-            move(p.x, p.y, d.x, d.y);
+            moveToEmpty(p, d);
             rabbitsCoordinates.remove(p);
             rabbitsCoordinates.add(new Point(p.x + d.x, p.y + d.y));
         }
     }
 
-    private void move(int x, int y, int dx, int dy) {
-        fields[x + dx][y + dy].animal = fields[x][y].getAnimal();
-        fields[x][y].animal = null;
+    public void agingProcess(Point p) {
+        assert !isEmpty(p.x, p.y);
+        Animal animal = fields[p.x][p.y].getAnimal();
+        animal.incrementAge();
+        if (animal.shouldDie()) {
+            if (isWolf(p.x, p.y)) {
+                wolvesCoordinates.remove(p);
+            } else if (isRabbit(p.x, p.y)) {
+                rabbitsCoordinates.remove(p);
+            }
+        }
+    }
+
+    public void moveWolf(Point p, Direction d) {
+        if (isEmpty(p.x + d.x, p.y + d.y)) { // Wolf -> Empty
+            moveToEmpty(p, d);
+            wolvesCoordinates.remove(p);
+            wolvesCoordinates.add(new Point(p.x + d.x, p.y + d.y));
+        }
+    }
+
+    private void moveToEmpty(Point p, Direction d) {
+        fields[p.x + d.x][p.y + d.y].animal = fields[p.x][p.y].getAnimal();
+        fields[p.x][p.y].animal = null;
     }
 
     private boolean checkContraints(int x, int y) {
         return x >= 0 && x < this.width && y >= 0 && y < this.height;
     }
 
-    private void initFields() {
-        fields = new Field[this.width][];
-        for (int i = 0; i < this.width; i++) {
-            fields[i] = new Field[this.height];
-            for (int j = 0; j < this.height; j++) {
-                fields[i][j] = new Field(100, null);
-            }
-        }
-    }
+    private void initFields(int wolvesCount, int rabbitsCount) {
+        reset();
 
-    private void initAnimals(int wolvesCount, int rabbitsCount) {
         ArrayList<Point> points = new ArrayList<>(this.width + this.height);
         for (int i = 0; i < this.width; i++) {
             for (int j = 0; j < this.height; j++) {
@@ -94,14 +117,29 @@ public class WolvesRabbitsMap {
         Point point;
         for (int i = 0; i < wolvesCount; i++) {
             point = points.get(generator.nextInt(points.size()));
+            points.remove(point);
             fields[point.x][point.y].animal = new Wolf();
             wolvesCoordinates.add(point);
         }
 
         for (int i = 0; i < rabbitsCount; i++) {
             point = points.get(generator.nextInt(points.size()));
+            points.remove(point);
             fields[point.x][point.y].animal = new Rabbit();
             rabbitsCoordinates.add(point);
+        }
+    }
+
+    private void reset() {
+        this.wolvesCoordinates.clear();
+        this.rabbitsCoordinates.clear();
+
+        this.fields = new Field[this.width][];
+        for (int i = 0; i < this.width; i++) {
+            this.fields[i] = new Field[this.height];
+            for (int j = 0; j < this.height; j++) {
+                this.fields[i][j] = new Field(100, null);
+            }
         }
     }
 
@@ -142,15 +180,25 @@ public class WolvesRabbitsMap {
             return animal;
         }
 
-        public boolean isEmpty() {
-            return this.animal == null;
-        }
-
     }
 
     private boolean isEmpty(int x, int y) {
         if (checkContraints(x, y)) {
-            return fields[x][y].isEmpty();
+            return fields[x][y].getAnimal() == null;
+        }
+        return false;
+    }
+
+    private boolean isWolf(int x, int y) {
+        if (checkContraints(x, y)) {
+            return fields[x][y].getAnimal() instanceof Wolf;
+        }
+        return false;
+    }
+
+    private boolean isRabbit(int x, int y) {
+        if (checkContraints(x, y)) {
+            return fields[x][y].getAnimal() instanceof Rabbit;
         }
         return false;
     }

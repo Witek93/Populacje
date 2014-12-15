@@ -95,10 +95,10 @@ public class ParametersFrame extends JFrame {
     private JPanel checkboxesPanel() {
         JPanel panel = new JPanel(new GridLayout(0, 2));
         panel.setBorder(new TitledBorder("Uwzględnij"));
-        reproduceCheckbox = new JCheckBox("rozmnażanie");
-        starveCheckbox = new JCheckBox("głód");
-        dieCheckbox = new JCheckBox("śmiertelność");
-        growGrassCheckbox = new JCheckBox("przyrost trawy");
+        reproduceCheckbox = new JCheckBox("rozmnażanie", true);
+        starveCheckbox = new JCheckBox("głód", true);
+        dieCheckbox = new JCheckBox("śmiertelność", true);
+        growGrassCheckbox = new JCheckBox("przyrost trawy", true);
 
         panel.add(reproduceCheckbox);
         panel.add(starveCheckbox);
@@ -217,7 +217,7 @@ public class ParametersFrame extends JFrame {
         return wolfReproduce.getValue() * 0.01;
     }
 
-    public double getWolfRandomlyDieRatio() {
+    public double getWolfDieRatio() {
         return wolfRandomlyDie.getValue() * 0.01;
     }
 
@@ -229,7 +229,7 @@ public class ParametersFrame extends JFrame {
         return rabbitReproduce.getValue() * 0.01;
     }
 
-    public double getRabbitRandomlyDieRatio() {
+    public double getRabbitDieRatio() {
         return rabbitRandomlyDie.getValue() * 0.01;
     }
 
@@ -239,6 +239,22 @@ public class ParametersFrame extends JFrame {
 
     public double getGrowGrassRatio() {
         return growGrass.getValue() * 0.01;
+    }
+    
+    public boolean canReproduce() {
+        return reproduceCheckbox.isSelected();
+    }
+    
+    public boolean canStarve() {
+        return starveCheckbox.isSelected();
+    }
+    
+    public boolean canDie() {
+        return dieCheckbox.isSelected();
+    }
+    
+    public boolean canGrowGrass() {
+        return growGrassCheckbox.isSelected();
     }
 
 }

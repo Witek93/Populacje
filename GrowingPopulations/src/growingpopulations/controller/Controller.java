@@ -39,24 +39,24 @@ public class Controller {
     }
 
     synchronized public void simulate() {
-//        if (this.model.getOptions().canDie) {
+        if (this.model.getOptions().canRandomlyDie()) {
 //            this.model.getMap().dieRabbits();
 //            this.model.getMap().dieWolves();
-//        }
-//
-//        if (this.model.getOptions().canStarve) {
-//            //TODO wydzielic dla krolikow i wilkow
+        }
+
+        if (this.model.getOptions().canStarve()) {
+            //TODO wydzielic dla krolikow i wilkow
 //            this.model.getMap().starve(this.model.getFactors().getStarvingRatio());
-//        }
-//
-//        if (this.model.getOptions().canReproduce()) {
-//            //TODO wydzielic dla krolikow i wilkow
+        }
+
+        if (this.model.getOptions().canReproduce()) {
+            //TODO wydzielic dla krolikow i wilkow
 //            this.model.getMap().reproduce(this.model.getFactors().getReproducingRatio());
-//        }
-//
-//        if (this.model.getOptions().canGrowGrass()) {
+        }
+
+        if (this.model.getOptions().canGrowGrass()) {
 //            this.model.getMap().growGrass(this.model.getFactors().getGrassGrowingRatio());
-//        }
+        }
 
         this.model.getMap().simulate();
 
@@ -83,7 +83,21 @@ public class Controller {
 
         private void updateParameters() {
             model.setSimulationInterval(view.getParametersFrame().getSimulationInterval());
-            model.getFactors().setGrassGrowingRatio(view.getParametersFrame().getGrowGrassRatio());
+            model.getFactors().setGrowGrassRatio(view.getParametersFrame().getGrowGrassRatio());
+
+            //checkboxes: reproduce, starve, dieRandomly, growGrass
+            model.getOptions().setCanReproduce(view.getParametersFrame().canReproduce());
+            model.getOptions().setCanStarve(view.getParametersFrame().canStarve());
+            model.getOptions().setRandomlyDie(view.getParametersFrame().canDie());
+            model.getOptions().setCanGrowGrass(view.getParametersFrame().canGrowGrass());
+
+            //wolf&rabbit: reproduce, dieRandomly, starve
+            model.getFactors().setWolfReproducingRatio(view.getParametersFrame().getWolfReproduceRatio());
+            model.getFactors().setWolfDieRatio(view.getParametersFrame().getWolfDieRatio());
+            model.getFactors().setWolfStarveRatio(view.getParametersFrame().getWolfStarveRatio());
+            model.getFactors().setRabbitReproducingRatio(view.getParametersFrame().getRabbitReproduceRatio());
+            model.getFactors().setRabbitDieRatio(view.getParametersFrame().getRabbitDieRatio());
+            model.getFactors().setRabbitStarveRatio(view.getParametersFrame().getRabbitStarveRatio());
         }
 
     }
@@ -97,7 +111,6 @@ public class Controller {
                 view.getMapPanel().generateMapPanel(model.getMapWidth(), model.getMapHeight());
                 drawMap();
                 view.getSplitPane().getTopComponent().repaint();
-                updateListener.updateParameters();
             }
         }
 
@@ -106,6 +119,7 @@ public class Controller {
             model.setMapHeight(view.getParametersFrame().getMapHeight());
             model.setRabbitsCount(view.getParametersFrame().getRabbitsCount());
             model.setWolvesCount(view.getParametersFrame().getWolvesCount());
+            updateListener.updateParameters();
             model.initMap();
         }
 
