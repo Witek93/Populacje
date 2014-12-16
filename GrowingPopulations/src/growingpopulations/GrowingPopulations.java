@@ -20,9 +20,6 @@ public class GrowingPopulations {
         this.view = new MainFrame("Symulacje populacji");
         this.model = new Model();
         this.controller = new Controller(this.view, this.model);
-        this.view.getMapPanel().reinitialize(
-                this.model.getParameters().getMapWidth(),
-                this.model.getParameters().getMapHeight());
     }
 
 }

@@ -21,6 +21,10 @@ public class Controller implements Runnable {
         this.model = model;
         this.startListener = new StartListener();
         this.pauseListener = new PauseListener();
+        
+        this.view.getMapPanel().reinitialize(
+                getParameters().getMapWidth(),
+                getParameters().getMapHeight());
 
         ActionListener updateListener = (ActionEvent e) -> {
             synchronized (Controller.class) {
@@ -123,7 +127,7 @@ public class Controller implements Runnable {
     }
 
     public void updatePlot() {
-        view.getPlot().addAnimalsAmount(getModelMap().getRabbitsCount(), getModelMap().getWolvesCount());
+        view.getPlot().addAnimalsCount(getModelMap().getRabbitsCount(), getModelMap().getWolvesCount());
     }
 
     private void resetParameters() {
@@ -136,7 +140,7 @@ public class Controller implements Runnable {
         view.getPlot().reinitialize();
         view.getMapPanel().reinitialize(getParameters().getMapWidth(), getParameters().getMapHeight());
         drawMap();
-        view.getSplitPane().getTopComponent().repaint();
+        view.repaint();
     }
 
     private void updateModelParameters() {

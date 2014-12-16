@@ -3,7 +3,6 @@ package growingpopulations.view;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
@@ -11,15 +10,11 @@ public class MapPanel extends JPanel {
 
     private JPanel[][] fields;
     private int width, height;
-    private final Color wolfColor, rabbitColor, grassColor;
 
     public MapPanel() {
         super();
         this.width = 0;
         this.height = 0;
-        this.wolfColor = Color.blue;
-        this.rabbitColor = Color.red;
-        this.grassColor = Color.green;
     }
 
     synchronized public void reinitialize(int width, int height) {
@@ -45,13 +40,13 @@ public class MapPanel extends JPanel {
 
     public void drawAll(Point[] noAnimals, Point[] wolves, Point[] rabbits) {
         for (Point p : wolves) {
-            this.fields[p.x][p.y].setBackground(wolfColor);
+            this.fields[p.x][p.y].setBackground(Color.blue);
         }
         for (Point p : rabbits) {
-            this.fields[p.x][p.y].setBackground(rabbitColor);
+            this.fields[p.x][p.y].setBackground(Color.red);
         }
         for (Point p : noAnimals) {
-            this.fields[p.x][p.y].setBackground(grassColor);
+            this.fields[p.x][p.y].setBackground(Color.green);
         }
     }
 

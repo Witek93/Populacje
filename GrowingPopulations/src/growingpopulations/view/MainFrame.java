@@ -1,41 +1,50 @@
 package growingpopulations.view;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 
 public class MainFrame extends JFrame {
 
-    private final MenuBarImplementation menu;
-    private final JSplitPane splitPane;
-    private final JPanel simulationPanel;
+    private final ParametersFrame parametersFrame;
     private Plot plot;
     private final MapPanel mapPanel;
     private final JButton startPauseButton;
 
     public MainFrame(String title) {
         super(title);
-        this.simulationPanel = new JPanel();
         this.plot = new Plot("czas", "liczebność");
         this.mapPanel = new MapPanel();
-        this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        this.menu = new MenuBarImplementation();
         this.startPauseButton = new JButton();
+        this.parametersFrame = new ParametersFrame();
 
-        this.simulationPanel.setLayout(new BorderLayout());
-        this.simulationPanel.setMinimumSize(new Dimension(0, 200));
-        this.simulationPanel.add(startPauseButton, BorderLayout.NORTH);
-        this.simulationPanel.add(splitPane, BorderLayout.CENTER);
+        //init menu bar
+        MenuBar menuBar = new MenuBar();
+        Menu menu = new Menu("Ustawienia");
+        MenuItem open = new MenuItem("Parametry");
+        open.addActionListener((ActionEvent e) -> {
+            parametersFrame.setVisible(true);
+        });
+        open.setShortcut(new MenuShortcut('O'));
+
+        menu.add(open);
+        menuBar.add(menu);
+        this.setMenuBar(menuBar);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setTopComponent(mapPanel);
+        splitPane.setBottomComponent(plot);
+        splitPane.setResizeWeight(1);
+
+        JPanel simulationPanel = new JPanel();
+        simulationPanel.setLayout(new BorderLayout());
+        simulationPanel.setMinimumSize(new Dimension(0, 200));
+        simulationPanel.add(startPauseButton, BorderLayout.NORTH);
+        simulationPanel.add(splitPane, BorderLayout.CENTER);
+        this.add(simulationPanel);
 
         this.plot.setPreferredSize(new Dimension(0, 200));
-
-        this.splitPane.setTopComponent(mapPanel);
-        this.splitPane.setBottomComponent(plot);
-        this.splitPane.setResizeWeight(1);
 
         initFrame();
     }
@@ -49,8 +58,6 @@ public class MainFrame extends JFrame {
         this.setSize(800, 600);
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setMenuBar(menu);
-        this.add(simulationPanel);
     }
 
     public void addStartPauseButtonListener(ActionListener listenForUpdate) {
@@ -62,19 +69,11 @@ public class MainFrame extends JFrame {
 
     // ------------------------- getters & setters --------------------------
     public ParametersFrame getParametersFrame() {
-        return menu.getParametersFrame();
-    }
-
-    public MenuBarImplementation getMenu() {
-        return menu;
+        return this.parametersFrame;
     }
 
     public JButton getStartPauseButton() {
         return startPauseButton;
-    }
-
-    public JSplitPane getSplitPane() {
-        return splitPane;
     }
 
     public MapPanel getMapPanel() {

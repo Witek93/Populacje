@@ -15,10 +15,11 @@ import javax.swing.event.ChangeEvent;
 public class ParametersFrame extends JFrame {
 
     private final JButton updateButton, resetButton;
-    private JSlider rabbitsCount, wolvesCount, mapWidth, mapHeight;
-    private JSlider simulationInterval, growGrass;
-    private JSlider wolfReproduce, wolfStarve;
-    private JSlider rabbitReproduce, rabbitStarve;
+    private JSlider rabbitsCount, wolvesCount,
+            mapWidth, mapHeight,
+            simulationInterval, growGrass,
+            wolfReproduce, wolfStarve,
+            rabbitReproduce, rabbitStarve;
     private JCheckBox reproduceCheckbox, starveCheckbox, growGrassCheckbox;
 
     public ParametersFrame() {
@@ -26,32 +27,36 @@ public class ParametersFrame extends JFrame {
         this.updateButton = new JButton("Aktualizuj");
         this.resetButton = new JButton("Resetuj");
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 0));
-        JPanel simulationPanel = new JPanel(new GridLayout(1, 0));
-        JPanel parametersPanel = new JPanel(new GridLayout(2, 0));
-        JPanel ratiosPanel = new JPanel(new BorderLayout());
-        JPanel animalRatiosPanel = new JPanel(new GridLayout(2, 0));
-
-        this.add(mainPanel);
-        mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
         buttonsPanel.add(updateButton);
         buttonsPanel.add(resetButton);
-        mainPanel.add(simulationPanel, BorderLayout.CENTER);
-        simulationPanel.add(parametersPanel);
-        parametersPanel.add(resetPanel());
-        parametersPanel.add(updatePanel());
-        simulationPanel.add(ratiosPanel);
-        ratiosPanel.add(checkboxesPanel(), BorderLayout.NORTH);
-        ratiosPanel.add(animalRatiosPanel, BorderLayout.CENTER);
-        animalRatiosPanel.add(wolfRatio());
-        animalRatiosPanel.add(rabbitRatio());
 
+        JPanel parametersPanel = new JPanel(new GridLayout(2, 0));
+        parametersPanel.add(createResetPanel());
+        parametersPanel.add(createUpdatePanel());
+
+        JPanel animalRatiosPanel = new JPanel(new GridLayout(2, 0));
+        animalRatiosPanel.add(createWolfRatio());
+        animalRatiosPanel.add(createRabbitRatio());
+
+        JPanel ratiosPanel = new JPanel(new BorderLayout());
+        ratiosPanel.add(animalRatiosPanel, BorderLayout.CENTER);
+        ratiosPanel.add(createCheckboxesPanel(), BorderLayout.NORTH);
+
+        JPanel simulationPanel = new JPanel(new GridLayout(1, 0));
+        simulationPanel.add(parametersPanel);
+        simulationPanel.add(ratiosPanel);
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(simulationPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
+        
+        this.add(mainPanel);
         this.setLocation(800, 0);
         this.setMinimumSize(new Dimension(500, 700));
     }
 
-    private JPanel resetPanel() {
+    private JPanel createResetPanel() {
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.setBorder(new TitledBorder("Parametry"));
 
@@ -78,7 +83,7 @@ public class ParametersFrame extends JFrame {
         return panel;
     }
 
-    private JPanel updatePanel() {
+    private JPanel createUpdatePanel() {
         JPanel panel = new JPanel(new GridLayout(0, 1));
 
         simulationInterval = createSlider(0, 3000);
@@ -92,7 +97,7 @@ public class ParametersFrame extends JFrame {
         return panel;
     }
 
-    private JPanel checkboxesPanel() {
+    private JPanel createCheckboxesPanel() {
         JPanel panel = new JPanel(new GridLayout(0, 2));
         panel.setBorder(new TitledBorder("Uwzględnij"));
         reproduceCheckbox = new JCheckBox("rozmnażanie", true);
@@ -105,7 +110,7 @@ public class ParametersFrame extends JFrame {
         return panel;
     }
 
-    private JPanel wolfRatio() {
+    private JPanel createWolfRatio() {
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.setBorder(new TitledBorder("Wilk"));
 
@@ -121,7 +126,7 @@ public class ParametersFrame extends JFrame {
         return panel;
     }
 
-    private JPanel rabbitRatio() {
+    private JPanel createRabbitRatio() {
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.setBorder(new TitledBorder("Królik"));
 

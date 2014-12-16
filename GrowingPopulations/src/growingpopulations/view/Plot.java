@@ -12,7 +12,6 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 public class Plot extends ChartPanel {
 
-    private final JFreeChart lineChart;
     private final XYSeriesCollection seriesCollection;
     private final Map<String, XYSeries> seriesMap;
     private int counter;
@@ -26,10 +25,10 @@ public class Plot extends ChartPanel {
         this.addSeries("Populacja królików", "króliki");
         this.addSeries("Populacja wilków", "wilki");
 
-        this.lineChart = ChartFactory.createXYLineChart(null, x_label, y_label,
+        JFreeChart lineChart = ChartFactory.createXYLineChart(null, x_label, y_label,
                 this.seriesCollection, PlotOrientation.VERTICAL, true, true, false);
 
-        this.setChart(this.lineChart);
+        this.setChart(lineChart);
         this.setMinimumSize(new Dimension(200, 200));
         this.setSize(400, 300);
     }
@@ -51,7 +50,7 @@ public class Plot extends ChartPanel {
         return this.seriesMap.get(key);
     }
 
-    public void addAnimalsAmount(int rabbitsCount, int wolvesCount) {
+    public void addAnimalsCount(int rabbitsCount, int wolvesCount) {
         this.getSeries("króliki").add(this.counter, rabbitsCount);
         this.getSeries("wilki").add(this.counter, wolvesCount);
         incrementCounter();
