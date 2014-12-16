@@ -56,12 +56,12 @@ public class ParametersFrame extends JFrame {
         panel.setBorder(new TitledBorder("Parametry"));
 
         mapWidth = createSlider(5, 50);
-        mapWidth.setBorder(new TitledBorder("Szerokość mapy"));
+        mapWidth.setBorder(new TitledBorder("Liczba wierszy"));
         mapWidth.addChangeListener((ChangeEvent e) -> {
             updateOnMapResize();
         });
         mapHeight = createSlider(5, 50);
-        mapHeight.setBorder(new TitledBorder("Wysokość mapy"));
+        mapHeight.setBorder(new TitledBorder("Liczba kolumn"));
         mapHeight.addChangeListener((ChangeEvent e) -> {
             updateOnMapResize();
         });
@@ -163,13 +163,29 @@ public class ParametersFrame extends JFrame {
         resetButton.addActionListener(listerForReset);
     }
 
-    public void initSliderValues(int simulationInterval, int rabbitsCount, int wolvesCount,
+    public void initResetSliders(int rabbitsCount, int wolvesCount,
             int mapWidth, int mapHeight) {
-        this.simulationInterval.setValue(simulationInterval);
         this.rabbitsCount.setValue(rabbitsCount);
         this.wolvesCount.setValue(wolvesCount);
         this.mapWidth.setValue(mapWidth);
         this.mapHeight.setValue(mapHeight);
+    }
+
+    public void initUpdateSliders(int simulationInterval, int growGrass) {
+        this.simulationInterval.setValue(simulationInterval);
+        this.growGrass.setValue(growGrass);
+    }
+
+    public void initRabbitRatios(int reproducingRatio, int starveRatio, int dieRatio) {
+        this.rabbitReproduce.setValue(reproducingRatio);
+        this.rabbitStarve.setValue(starveRatio);
+        this.rabbitRandomlyDie.setValue(dieRatio);
+    }
+
+    public void initWolfRatios(int reproducingRatio, int starveRatio, int dieRatio) {
+        this.wolfReproduce.setValue(reproducingRatio);
+        this.wolfStarve.setValue(starveRatio);
+        this.wolfRandomlyDie.setValue(dieRatio);
     }
 
     private void updateOnMapResize() {
@@ -240,19 +256,19 @@ public class ParametersFrame extends JFrame {
     public double getGrowGrassRatio() {
         return growGrass.getValue() * 0.01;
     }
-    
+
     public boolean canReproduce() {
         return reproduceCheckbox.isSelected();
     }
-    
+
     public boolean canStarve() {
         return starveCheckbox.isSelected();
     }
-    
+
     public boolean canDie() {
         return dieCheckbox.isSelected();
     }
-    
+
     public boolean canGrowGrass() {
         return growGrassCheckbox.isSelected();
     }

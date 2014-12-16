@@ -2,10 +2,12 @@ package growingpopulations.controller;
 
 import growingpopulations.view.MainFrame;
 import growingpopulations.model.Model;
-import java.awt.Point;
+import growingpopulations.model.SimulationFactors;
+import growingpopulations.model.SimulationOptions;
+import growingpopulations.model.map.WolvesRabbitsMap;
+import growingpopulations.view.ParametersFrame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 public class Controller {
 
@@ -33,43 +35,75 @@ public class Controller {
             this.view.getStartPauseButton().setText("Start");
         }
 
-        this.view.getMenu().initSliderValues(this.model.getSimulationInterval(),
-                this.model.getRabbitsCount(), this.model.getWolvesCount(),
-                this.model.getMapWidth(), this.model.getMapHeight());
+        this.view.getParametersFrame().initResetSliders(
+                this.model.getRabbitsCount(),
+                this.model.getWolvesCount(),
+                this.model.getMapWidth(),
+                this.model.getMapHeight());
+
+        this.view.getParametersFrame().initUpdateSliders(
+                this.model.getSimulationInterval(),
+                (int) (this.model.getFactors().getGrowGrassRatio() * 100)
+        );
+
+//        this.view.getParametersFrame().initRabbitRatios();
+        this.view.getParametersFrame().initRabbitRatios(
+                (int) (this.model.getFactors().getRabbitReproducingRatio() * 100),
+                (int) (this.model.getFactors().getRabbitStarveRatio() * 100),
+                (int) (this.model.getFactors().getRabbitDieRatio() * 100));
+
+        this.view.getParametersFrame().initWolfRatios(
+                (int) (this.model.getFactors().getWolfReproducingRatio() * 100),
+                (int) (this.model.getFactors().getWolfStarveRatio() * 100),
+                (int) (this.model.getFactors().getWolfDieRatio() * 100));
     }
 
     synchronized public void simulate() {
-        if (this.model.getOptions().canRandomlyDie()) {
+        WolvesRabbitsMap map = this.model.getMap();
+        SimulationFactors factors = this.model.getFactors();
+        SimulationOptions options = this.model.getOptions();
+
+        if (options.canRandomlyDie()) {
 //            this.model.getMap().dieRabbits();
 //            this.model.getMap().dieWolves();
         }
 
-        if (this.model.getOptions().canStarve()) {
-            //TODO wydzielic dla krolikow i wilkow
-//            this.model.getMap().starve(this.model.getFactors().getStarvingRatio());
+        if (options.canStarve()) {
+            map.increaseRabbitsStarvation(factors.getRabbitStarveRatio());
+            map.increaseWolvesStarvation(factors.getWolfStarveRatio());
         }
 
-        if (this.model.getOptions().canReproduce()) {
-            //TODO wydzielic dla krolikow i wilkow
-//            this.model.getMap().reproduce(this.model.getFactors().getReproducingRatio());
+        if (options.canReproduce()) {
+            map.reproduceRabbits(factors.getRabbitReproducingRatio(),
+                    this.model.calculateMaxRabbitsCount());
+            map.reproduceWolves(factors.getWolfReproducingRatio(),
+                    this.model.calculateMaxWolvesCount());
         }
 
-        if (this.model.getOptions().canGrowGrass()) {
-//            this.model.getMap().growGrass(this.model.getFactors().getGrassGrowingRatio());
+        if (options.canGrowGrass()) {
+            map.growGrass(factors.getGrowGrassRatio());
         }
 
-        this.model.getMap().simulate();
+        map.moveWolves();
+        map.moveRabbits();
+        map.agingProcess();
+        map.updateDeaths();
 
-        drawMap();
+        this.drawMap();
     }
 
     private void drawMap() {
         synchronized (Controller.class) {
-            List<Point> grass = this.model.getMap().getEmptyCoordinates();
-            List<Point> wolves = this.model.getMap().getWolvesCoordinates();
-            List<Point> rabbits = this.model.getMap().getRabbitsCoordinates();
-            this.view.getMapPanel().drawAll(grass, wolves, rabbits);
+            this.view.getMapPanel().drawAll(
+                    this.model.getMap().getNoAnimalsCoordinates(),
+                    this.model.getMap().getWolvesCoordinates(),
+                    this.model.getMap().getRabbitsCoordinates());
         }
+    }
+
+    public void updatePlot() {
+        this.view.getPlot().addAnimalsAmount(this.model.getMap().getRabbitsCount(),
+                this.model.getMap().getWolvesCount());
     }
 
     private class UpdateListener implements ActionListener {
@@ -82,22 +116,26 @@ public class Controller {
         }
 
         private void updateParameters() {
-            model.setSimulationInterval(view.getParametersFrame().getSimulationInterval());
-            model.getFactors().setGrowGrassRatio(view.getParametersFrame().getGrowGrassRatio());
+            ParametersFrame parameters = view.getParametersFrame();
+            SimulationFactors factors = model.getFactors();
+            SimulationOptions options = model.getOptions();
+
+            model.setSimulationInterval(parameters.getSimulationInterval());
+            factors.setGrowGrassRatio(parameters.getGrowGrassRatio());
 
             //checkboxes: reproduce, starve, dieRandomly, growGrass
-            model.getOptions().setCanReproduce(view.getParametersFrame().canReproduce());
-            model.getOptions().setCanStarve(view.getParametersFrame().canStarve());
-            model.getOptions().setRandomlyDie(view.getParametersFrame().canDie());
-            model.getOptions().setCanGrowGrass(view.getParametersFrame().canGrowGrass());
+            options.setCanReproduce(parameters.canReproduce());
+            options.setCanStarve(parameters.canStarve());
+            options.setRandomlyDie(parameters.canDie());
+            options.setCanGrowGrass(parameters.canGrowGrass());
 
             //wolf&rabbit: reproduce, dieRandomly, starve
-            model.getFactors().setWolfReproducingRatio(view.getParametersFrame().getWolfReproduceRatio());
-            model.getFactors().setWolfDieRatio(view.getParametersFrame().getWolfDieRatio());
-            model.getFactors().setWolfStarveRatio(view.getParametersFrame().getWolfStarveRatio());
-            model.getFactors().setRabbitReproducingRatio(view.getParametersFrame().getRabbitReproduceRatio());
-            model.getFactors().setRabbitDieRatio(view.getParametersFrame().getRabbitDieRatio());
-            model.getFactors().setRabbitStarveRatio(view.getParametersFrame().getRabbitStarveRatio());
+            factors.setWolfReproducingRatio(parameters.getWolfReproduceRatio());
+            factors.setWolfDieRatio(parameters.getWolfDieRatio());
+            factors.setWolfStarveRatio(parameters.getWolfStarveRatio());
+            factors.setRabbitReproducingRatio(parameters.getRabbitReproduceRatio());
+            factors.setRabbitDieRatio(parameters.getRabbitDieRatio());
+            factors.setRabbitStarveRatio(parameters.getRabbitStarveRatio());
         }
 
     }
@@ -108,6 +146,7 @@ public class Controller {
         public void actionPerformed(ActionEvent e) {
             synchronized (Controller.class) {
                 resetParameters();
+                view.getPlot().reset();
                 view.getMapPanel().generateMapPanel(model.getMapWidth(), model.getMapHeight());
                 drawMap();
                 view.getSplitPane().getTopComponent().repaint();
@@ -120,7 +159,7 @@ public class Controller {
             model.setRabbitsCount(view.getParametersFrame().getRabbitsCount());
             model.setWolvesCount(view.getParametersFrame().getWolvesCount());
             updateListener.updateParameters();
-            model.initMap();
+            model.resetMap();
         }
 
     }

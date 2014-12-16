@@ -12,39 +12,37 @@ public class MainFrame extends JFrame {
 
     private final MenuBarImplementation menu;
     private final JSplitPane splitPane;
-    private final JPanel simulationPanel, plotPanel; //TODO wykres
+    private final JPanel simulationPanel;
+    private Plot plot;
     private final MapPanel mapPanel;
     private final JButton startPauseButton;
 
     public MainFrame(String title) {
         super(title);
         this.simulationPanel = new JPanel();
-        this.plotPanel = new JPanel();
+        this.plot = new Plot("czas", "liczebność");
         this.mapPanel = new MapPanel();
         this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         this.menu = new MenuBarImplementation();
         this.startPauseButton = new JButton();
 
-        initSimulationPanel();
-        initPlotPanel();
-        initSplitPane();
+        this.simulationPanel.setLayout(new BorderLayout());
+        this.simulationPanel.setMinimumSize(new Dimension(0, 200));
+        this.simulationPanel.add(startPauseButton, BorderLayout.NORTH);
+        this.simulationPanel.add(splitPane, BorderLayout.CENTER);
+
+        this.plot.setPreferredSize(new Dimension(0, 200));
+
+        this.splitPane.setTopComponent(mapPanel);
+        this.splitPane.setBottomComponent(plot);
+        this.splitPane.setResizeWeight(1);
+
         initFrame();
     }
 
-    private void initPlotPanel() {
-        this.plotPanel.setMinimumSize(new Dimension(0, 200));
-    }
-
-    private void initSplitPane() {
-        this.splitPane.setTopComponent(mapPanel);
-        this.splitPane.setBottomComponent(plotPanel);
-        this.splitPane.setResizeWeight(1);
-    }
-
-    private void initSimulationPanel() {
-        this.simulationPanel.setLayout(new BorderLayout());
-        this.simulationPanel.add(startPauseButton, BorderLayout.NORTH);
-        this.simulationPanel.add(splitPane, BorderLayout.CENTER);
+    public void resetPlot() {
+        this.plot = new Plot("czas", "liczebność");
+        this.plot.setPreferredSize(new Dimension(0, 200));
     }
 
     private void initFrame() {
@@ -81,6 +79,10 @@ public class MainFrame extends JFrame {
 
     public MapPanel getMapPanel() {
         return mapPanel;
+    }
+
+    public Plot getPlot() {
+        return plot;
     }
 
 }

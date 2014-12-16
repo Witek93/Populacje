@@ -4,69 +4,76 @@ import growingpopulations.model.map.WolvesRabbitsMap;
 
 public class Model {
 
-    volatile private int simulationInterval;
-    volatile private int mapWidth, mapHeight;
-    volatile private int rabbitsCount, wolvesCount;
+    volatile private Parameters parameters;
+//    volatile private int simulationInterval;
     volatile private boolean started;
     private final SimulationOptions options;
     private final SimulationFactors factors;
     private WolvesRabbitsMap map;
 
     public Model() {
-        this.rabbitsCount = 3;
-        this.wolvesCount = 2;
-        this.mapWidth = 5;
-        this.mapHeight = 5;
-        this.simulationInterval = 300;
+        this.parameters = new Parameters(30, 40, 300, 20);
         this.started = true;
         this.options = new SimulationOptions();
         this.factors = new SimulationFactors();
-        initMap();
+        this.map = new WolvesRabbitsMap(
+                parameters.mapWidth, parameters.mapHeight,
+                parameters.wolvesCount, parameters.rabbitsCount);
     }
 
-    public final void initMap() {
-        this.map = new WolvesRabbitsMap(mapWidth, mapHeight, wolvesCount, rabbitsCount);
+    public final void resetMap() {
+        this.map = new WolvesRabbitsMap(
+                parameters.mapWidth, parameters.mapHeight,
+                parameters.wolvesCount, parameters.rabbitsCount);
+    }
+
+    public int calculateMaxRabbitsCount() {
+        return (int) (getMapHeight() * getMapWidth() * 0.5);
+    }
+
+    public int calculateMaxWolvesCount() {
+        return (int) (getMapHeight() * getMapWidth() * 0.2);
     }
 
     // ----------------------- getters & setters -------------------------
     public int getSimulationInterval() {
-        return simulationInterval;
+        return getFactors().getSimulationInterval();
     }
 
     public void setSimulationInterval(int simulationInterval) {
-        this.simulationInterval = simulationInterval;
+        this.getFactors().setSimulationInterval(simulationInterval);
     }
 
     public int getMapWidth() {
-        return mapWidth;
+        return parameters.mapWidth;
     }
 
     public void setMapWidth(int mapWidth) {
-        this.mapWidth = mapWidth;
+        this.parameters.mapWidth = mapWidth;
     }
 
     public int getMapHeight() {
-        return mapHeight;
+        return parameters.mapHeight;
     }
 
     public void setMapHeight(int mapHeight) {
-        this.mapHeight = mapHeight;
+        this.parameters.mapHeight = mapHeight;
     }
 
     public int getRabbitsCount() {
-        return rabbitsCount;
+        return parameters.rabbitsCount;
     }
 
     public void setRabbitsCount(int rabbitsCount) {
-        this.rabbitsCount = rabbitsCount;
+        this.parameters.rabbitsCount = rabbitsCount;
     }
 
     public int getWolvesCount() {
-        return wolvesCount;
+        return parameters.wolvesCount;
     }
 
     public void setWolvesCount(int wolvesCount) {
-        this.wolvesCount = wolvesCount;
+        this.parameters.wolvesCount = wolvesCount;
     }
 
     public boolean isStarted() {
@@ -87,6 +94,20 @@ public class Model {
 
     public WolvesRabbitsMap getMap() {
         return map;
+    }
+
+    private class Parameters {
+
+        volatile private int mapWidth, mapHeight;
+        volatile private int rabbitsCount, wolvesCount;
+
+        public Parameters(int mapWidth, int mapHeight, int rabbitsCount, int wolvesCount) {
+            this.mapWidth = mapWidth;
+            this.mapHeight = mapHeight;
+            this.rabbitsCount = rabbitsCount;
+            this.wolvesCount = wolvesCount;
+        }
+
     }
 
 }

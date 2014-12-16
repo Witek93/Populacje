@@ -2,20 +2,23 @@ package growingpopulations.model;
 
 public class SimulationFactors {
 
-    private double wolfReproducingRatio, wolfStarveRatio, wolfDieRatio;
-    private double rabbitReproducingRatio, rabbitStarveRatio, rabbitDieRatio;
-    private double growGrassRatio;
+    volatile private double wolfReproducingRatio, wolfStarveRatio, wolfDieRatio;
+    volatile private double rabbitReproducingRatio, rabbitStarveRatio, rabbitDieRatio;
+    volatile private double growGrassRatio;
+    volatile private int simulationInterval;
 
     public SimulationFactors() {
-        this.wolfReproducingRatio = 0.1;
-        this.wolfStarveRatio = 0.1;
+        this.wolfReproducingRatio = 0.20;
+        this.wolfStarveRatio = 0.05;
         this.wolfDieRatio = 0.1;
 
-        this.rabbitReproducingRatio = 0.1;
-        this.rabbitStarveRatio = 0.1;
-        this.rabbitDieRatio = 0.1;
+        this.rabbitReproducingRatio = 0.9;
+        this.rabbitStarveRatio = 0.10;
+        this.rabbitDieRatio = 0.05;
 
-        this.growGrassRatio = 0.1;
+        this.growGrassRatio = 0.55;
+
+        this.simulationInterval = 50;
     }
 
     public double getWolfReproducingRatio() {
@@ -72,6 +75,14 @@ public class SimulationFactors {
 
     public void setGrowGrassRatio(double growGrassRatio) {
         this.growGrassRatio = growGrassRatio;
+    }
+
+    public int getSimulationInterval() {
+        return simulationInterval;
+    }
+
+    public void setSimulationInterval(int simulationInterval) {
+        this.simulationInterval = simulationInterval;
     }
 
 }

@@ -30,6 +30,7 @@ public class GrowingPopulations implements Runnable {
             try {
                 while (this.model.isStarted()) {
                     this.controller.simulate();
+                    this.controller.updatePlot();
                     Thread.sleep(this.model.getSimulationInterval());
                 }
             } catch (InterruptedException ex) {

@@ -43,17 +43,18 @@ public class MapPanel extends JPanel {
         }
     }
 
-    public void drawAll(List<Point> grass, List<Point> wolves, List<Point> rabbits) {
-        for (Point p : grass) {
-            this.fields[p.x][p.y].setBackground(grassColor);
-        }
+    public void drawAll(List<Point> noAnimals, List<Point> wolves, List<Point> rabbits) {
         for (Point p : wolves) {
             this.fields[p.x][p.y].setBackground(wolfColor);
         }
         for (Point p : rabbits) {
             this.fields[p.x][p.y].setBackground(rabbitColor);
         }
+        for (Point p : noAnimals) {
+            this.fields[p.x][p.y].setBackground(grassColor);
+        }
     }
+
 
     private JPanel createField() {
         JPanel field = new JPanel();

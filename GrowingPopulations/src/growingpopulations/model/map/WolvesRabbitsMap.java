@@ -1,8 +1,6 @@
 package growingpopulations.model.map;
 
-import growingpopulations.model.map.animals.Animal;
-import growingpopulations.model.map.animals.Rabbit;
-import growingpopulations.model.map.animals.Wolf;
+import growingpopulations.model.map.animals.*;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,40 +23,114 @@ public class WolvesRabbitsMap {
         initFields(wolvesCount, rabbitsCount);
     }
 
-    public void simulate() {
-        simulateRabbits();
-        simulateWolves();
-    }
-
-    private void simulateRabbits() {
-        Point[] points = rabbitsCoordinates.toArray(new Point[rabbitsCoordinates.size()]);
-        for (Point p : points) {
-            assert !isEmpty(p.x, p.y);
-            Animal animal = fields[p.x][p.y].getAnimal();
-            animal.incrementAge();
-            if (animal.shouldDie()) {
-                rabbitsCoordinates.remove(p);
-            } else {
-                moveRabbit(p, randomDirection());
+    public void reproduceRabbits(double rabbitReproduceRatio, int maxCount) {
+        Direction d = null;
+        Point target = null;
+        for (Point p : getRabbitsCoodinatesCopy()) {
+            if (getRabbitsCount() >= maxCount || fields[p.x][p.y].animal.isHungry()) {
+                return;
+            }
+            if (rabbitReproduceRatio > generator.nextDouble()) {
+                d = randomDirection();
+                target = new Point(p.x + d.x, p.y + d.y);
+                if (hasNoAnimal(target)) {
+                    createRabbit(target);
+                }
             }
         }
     }
 
-    private void simulateWolves() {
-        Point[] points = wolvesCoordinates.toArray(new Point[wolvesCoordinates.size()]);
-        for (Point p : points) {
-            assert !isEmpty(p.x, p.y);
-            Animal animal = fields[p.x][p.y].getAnimal();
-            animal.incrementAge();
-            if (animal.shouldDie()) {
-                wolvesCoordinates.remove(p);
-            } else {
-                moveWolf(p, randomDirection());
+    public void reproduceWolves(double wolvesReproduceRatio, int maxCount) {
+        Direction d = null;
+        Point target = null;
+        for (Point p : getWolvesCoodinatesCopy()) {
+            if (getWolvesCount() >= maxCount || fields[p.x][p.y].animal.isHungry()) {
+                return;
+            }
+            if (wolvesReproduceRatio > generator.nextDouble()) {
+                d = randomDirection();
+                target = new Point(p.x + d.x, p.y + d.y);
+                if (hasNoAnimal(target)) {
+                    createWolf(target);
+                }
             }
         }
     }
 
-    public void growGrass(int ratio) {
+    public void increaseWolvesStarvation(double wolfStarveRatio) {
+        for (Point p : getWolvesCoodinatesCopy()) {
+            assert !hasNoAnimal(p);
+            fields[p.x][p.y].getAnimal().increaseStarvingLevel(wolfStarveRatio);
+        }
+    }
+
+    public void increaseRabbitsStarvation(double rabbitStarveRatio) {
+        for (Point p : getRabbitsCoodinatesCopy()) {
+            assert !hasNoAnimal(p);
+            fields[p.x][p.y].getAnimal().increaseStarvingLevel(rabbitStarveRatio);
+        }
+    }
+
+    public void agingProcess(Point[] animals) {
+        for (Point p : getRabbitsCoodinatesCopy()) {
+            assert !hasNoAnimal(p);
+            fields[p.x][p.y].getAnimal().increaseAge();
+        }
+    }
+
+    public void agingProcess() {
+        agingProcess(getRabbitsCoodinatesCopy());
+        agingProcess(getWolvesCoodinatesCopy());
+    }
+
+    public void updateDeaths() {
+        for (Point p : getRabbitsCoodinatesCopy()) {
+            assert !hasNoAnimal(p);
+            if (fields[p.x][p.y].getAnimal().shouldDie()) {
+                removeRabbit(p);
+            }
+        }
+        for (Point p : getWolvesCoodinatesCopy()) {
+            assert !hasNoAnimal(p);
+            if (fields[p.x][p.y].getAnimal().shouldDie()) {
+                removeWolf(p);
+            }
+        }
+    }
+
+    public void moveRabbits() {
+        for (Point p : getRabbitsCoodinatesCopy()) {
+            assert !hasNoAnimal(p);
+            rabbitsMove(p, randomDirection());
+        }
+    }
+
+    public void moveWolves() {
+        for (Point p : getWolvesCoodinatesCopy()) {
+            assert !hasNoAnimal(p);
+            Point rabbit = findRabbit(p); //TODO
+            if (rabbit == null) {
+                wolfMove(p, randomDirection());
+            } else {
+                wolfHunt(p, rabbit);
+            }
+        }
+    }
+
+    public Point findRabbit(Point p) {
+        Point target = null;
+        for (int i = p.x - 1; i <= p.x + 1; i++) {
+            for (int j = p.y - 1; j <= p.y + 1; j++) {
+                target = new Point(i, j);
+                if (isRabbit(target)) {
+                    return target;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void growGrass(double ratio) {
         for (Field[] fieldRow : fields) {
             for (Field field : fieldRow) {
                 field.growGrass(ratio);
@@ -66,42 +138,75 @@ public class WolvesRabbitsMap {
         }
     }
 
-    public void moveRabbit(Point p, Direction d) {
-        if (isEmpty(p.x + d.x, p.y + d.y)) { // Rabbit -> Empty
-            moveToEmpty(p, d);
+    private void rabbitsMove(Point p, Direction d) {
+        Point target = new Point(p.x + d.x, p.y + d.y);
+        Field field = fields[p.x][p.y];
+        Animal rabbit = field.getAnimal();
+        if (rabbit.isHungry() && field.hasEnoughGrass()) {
+            rabbit.decreaseHunger();
+            field.decreaseGrassAmount();
+        }
+        if (hasNoAnimal(target)) { // Rabbit -> Empty
+            moveRabbitToField(p, target);
+        }
+    }
+
+    private void wolfMove(Point p, Direction d) {
+        Point target = new Point(p.x + d.x, p.y + d.y);
+        if (hasNoAnimal(target)) { // Wolf -> Empty
+            moveWolfToField(p, target);
+        }
+    }
+
+    private void wolfHunt(Point p, Point rabbit) {
+        Animal wolf = fields[p.x][p.y].getAnimal();
+        if (wolf.isHungry()) {
+            wolf.decreaseHunger();
+            removeRabbit(rabbit);
+            moveWolfToField(p, rabbit);
+        }
+    }
+
+    private void moveRabbitToField(Point p, Point target) {
+        assert hasNoAnimal(target);
+        fields[target.x][target.y].animal = fields[p.x][p.y].getAnimal();
+        rabbitsCoordinates.add(target);
+        removeRabbit(p);
+    }
+
+    private void moveWolfToField(Point p, Point target) {
+        assert hasNoAnimal(target);
+        fields[target.x][target.y].animal = fields[p.x][p.y].getAnimal();
+        wolvesCoordinates.add(target);
+        removeWolf(p);
+    }
+
+    private void removeRabbit(Point p) {
+        if (isRabbit(p)) {
             rabbitsCoordinates.remove(p);
-            rabbitsCoordinates.add(new Point(p.x + d.x, p.y + d.y));
+            fields[p.x][p.y].animal = null;
         }
     }
 
-    public void agingProcess(Point p) {
-        assert !isEmpty(p.x, p.y);
-        Animal animal = fields[p.x][p.y].getAnimal();
-        animal.incrementAge();
-        if (animal.shouldDie()) {
-            if (isWolf(p.x, p.y)) {
-                wolvesCoordinates.remove(p);
-            } else if (isRabbit(p.x, p.y)) {
-                rabbitsCoordinates.remove(p);
-            }
-        }
+    private void createRabbit(Point p) {
+        rabbitsCoordinates.add(p);
+        fields[p.x][p.y].animal = new Rabbit();
     }
 
-    public void moveWolf(Point p, Direction d) {
-        if (isEmpty(p.x + d.x, p.y + d.y)) { // Wolf -> Empty
-            moveToEmpty(p, d);
+    private void removeWolf(Point p) {
+        if (isWolf(p)) {
             wolvesCoordinates.remove(p);
-            wolvesCoordinates.add(new Point(p.x + d.x, p.y + d.y));
+            fields[p.x][p.y].animal = null;
         }
     }
 
-    private void moveToEmpty(Point p, Direction d) {
-        fields[p.x + d.x][p.y + d.y].animal = fields[p.x][p.y].getAnimal();
-        fields[p.x][p.y].animal = null;
+    private void createWolf(Point p) {
+        wolvesCoordinates.add(p);
+        fields[p.x][p.y].animal = new Wolf();
     }
 
-    private boolean checkContraints(int x, int y) {
-        return x >= 0 && x < this.width && y >= 0 && y < this.height;
+    private boolean checkContraints(Point p) {
+        return p.x >= 0 && p.x < this.width && p.y >= 0 && p.y < this.height;
     }
 
     private void initFields(int wolvesCount, int rabbitsCount) {
@@ -151,16 +256,21 @@ public class WolvesRabbitsMap {
         return wolvesCoordinates;
     }
 
-    public List<Point> getEmptyCoordinates() {
-        List<Point> points = new ArrayList<>(width * height);
-        for (int i = 0; i < this.width; i++) {
-            for (int j = 0; j < this.height; j++) {
-                points.add(new Point(i, j));
-            }
-        }
-        points.removeAll(rabbitsCoordinates);
-        points.removeAll(wolvesCoordinates);
-        return points;
+    public Point[] getWolvesCoodinatesCopy() {
+        return wolvesCoordinates.toArray(new Point[wolvesCoordinates.size()]);
+    }
+
+    public Point[] getRabbitsCoodinatesCopy() {
+        return rabbitsCoordinates.toArray(new Point[rabbitsCoordinates.size()]);
+    }
+
+    public int getRabbitsCount() {
+        return rabbitsCoordinates.size();
+    }
+
+    public int getWolvesCount() {
+        return wolvesCoordinates.size();
+
     }
 
     private class Field {
@@ -170,10 +280,19 @@ public class WolvesRabbitsMap {
 
         public Field(double amount, Animal animal) {
             this.animal = animal;
+            this.amount = 100.0;
         }
 
-        public void growGrass(int ratio) {
-            this.amount *= (1 + ratio);
+        public boolean hasEnoughGrass() {
+            return this.amount > 25.0;
+        }
+
+        public void decreaseGrassAmount() {
+            this.amount = Math.max(0, this.amount - 50.0);
+        }
+
+        public void growGrass(double ratio) {
+            this.amount = Math.floor(Math.max(20, Math.min(this.amount * (1 + ratio), 200)));
         }
 
         public Animal getAnimal() {
@@ -182,25 +301,26 @@ public class WolvesRabbitsMap {
 
     }
 
-    private boolean isEmpty(int x, int y) {
-        if (checkContraints(x, y)) {
-            return fields[x][y].getAnimal() == null;
+    private boolean hasNoAnimal(Point p) {
+        if (checkContraints(p)) {
+            return fields[p.x][p.y].getAnimal() == null;
         }
         return false;
     }
 
-    private boolean isWolf(int x, int y) {
-        if (checkContraints(x, y)) {
-            return fields[x][y].getAnimal() instanceof Wolf;
+    private boolean isRabbit(Point p) {
+        if (checkContraints(p)) {
+            return fields[p.x][p.y].getAnimal() instanceof Rabbit;
         }
         return false;
     }
 
-    private boolean isRabbit(int x, int y) {
-        if (checkContraints(x, y)) {
-            return fields[x][y].getAnimal() instanceof Rabbit;
+    private boolean isWolf(Point p) {
+        if (checkContraints(p)) {
+            return fields[p.x][p.y].getAnimal() instanceof Wolf;
         }
         return false;
+
     }
 
     public enum Direction {
@@ -224,6 +344,18 @@ public class WolvesRabbitsMap {
 
     private Direction randomDirection() {
         return directions[generator.nextInt(directions.length)];
+    }
+
+    public List<Point> getNoAnimalsCoordinates() {
+        List<Point> points = new ArrayList<>(width * height);
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                points.add(new Point(i, j));
+            }
+        }
+        points.removeAll(rabbitsCoordinates);
+        points.removeAll(wolvesCoordinates);
+        return points;
     }
 
 }
