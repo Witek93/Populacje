@@ -3,10 +3,8 @@ package growingpopulations;
 import growingpopulations.view.MainFrame;
 import growingpopulations.model.Model;
 import growingpopulations.controller.Controller;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class GrowingPopulations implements Runnable {
+public class GrowingPopulations {
 
     MainFrame view;
     Model model;
@@ -23,23 +21,8 @@ public class GrowingPopulations implements Runnable {
         this.model = new Model();
         this.controller = new Controller(this.view, this.model);
         this.view.getMapPanel().reinitialize(
-                this.model.getParameters().getMapWidth(), 
+                this.model.getParameters().getMapWidth(),
                 this.model.getParameters().getMapHeight());
-    }
-
-    @Override
-    public void run() {
-//        while (true) {
-//            try {
-//                while (this.model.getParameters().isStarted()) {
-//                    this.controller.simulate();
-//                    this.controller.updatePlot();
-//                    Thread.sleep(this.model.getFactors().getSimulationInterval());
-//                }
-//            } catch (InterruptedException ex) {
-//                Logger.getLogger(GrowingPopulations.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
     }
 
 }
