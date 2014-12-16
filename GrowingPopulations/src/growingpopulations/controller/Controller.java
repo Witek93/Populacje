@@ -1,30 +1,40 @@
 package growingpopulations.controller;
 
-import growingpopulations.view.MainFrame;
-import growingpopulations.model.Model;
-import growingpopulations.model.Factors;
-import growingpopulations.model.Options;
+import growingpopulations.GrowingPopulations;
+import growingpopulations.model.*;
 import growingpopulations.model.map.WolvesRabbitsMap;
+import growingpopulations.view.MainFrame;
 import growingpopulations.view.ParametersFrame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Controller {
+public class Controller implements Runnable {
 
     MainFrame view;
     Model model;
-    UpdateListener updateListener;
-    ActionListener resetListener, startListener, pauseListener;
+    ActionListener startListener, pauseListener;
 
     public Controller(MainFrame view, Model model) {
         this.view = view;
         this.model = model;
-        this.updateListener = new UpdateListener();
-        this.resetListener = new ResetListener();
         this.startListener = new StartListener();
         this.pauseListener = new PauseListener();
 
-        if (this.model.getParameters().isStarted()) {
+        ActionListener updateListener = (ActionEvent e) -> {
+            synchronized (Controller.class) {
+                updateModelParameters();
+            }
+        };
+
+        ActionListener resetListener = (ActionEvent e) -> {
+            synchronized (Controller.class) {
+                resetParameters();
+            }
+        };
+
+        if (getParameters().isStarted()) {
             this.view.addStartPauseButtonListener(startListener);
             this.view.getStartPauseButton().setText("Pause");
         } else {
@@ -32,67 +42,73 @@ public class Controller {
             this.view.getStartPauseButton().setText("Start");
         }
 
-        this.view.getParametersFrame().initResetSliders(
-                this.model.getParameters().getRabbitsCount(),
-                this.model.getParameters().getWolvesCount(),
-                this.model.getParameters().getMapWidth(),
-                this.model.getParameters().getMapHeight());
+        initParametersOnView();
 
-        this.view.getParametersFrame().initUpdateSliders(
+        getParametersFrame().addUpdateButtonListener(updateListener);
+        getParametersFrame().addResetButtonListener(resetListener);
+    }
+
+    private void initParametersOnView() {
+        Options options = this.model.getOptions();
+        getParametersFrame().initResetSliders(
+                getParameters().getRabbitsCount(),
+                getParameters().getWolvesCount(),
+                getParameters().getMapWidth(),
+                getParameters().getMapHeight());
+        getParametersFrame().initUpdateSliders(
                 this.model.getFactors().getSimulationInterval(),
-                (int) (this.model.getFactors().getGrowGrassRatio() * 100)
-        );
+                (int) (this.model.getFactors().getGrowGrassRatio() * 100));
+        getParametersFrame().initRabbitRatios(
+                (int) (getRabbitRatios().getReproduce() * 100),
+                (int) (getRabbitRatios().getStarve() * 100));
+        getParametersFrame().initWolfRatios(
+                (int) (getWolfRatios().getReproduce() * 100),
+                (int) (getWolfRatios().getStarve() * 100));
+        getParametersFrame().initCheckboxes(options.canReproduce(),
+                options.canStarve(), options.canGrowGrass());
+    }
 
-        this.view.getParametersFrame().initRabbitRatios(
-                (int) (this.model.getFactors().getRabbitReproducingRatio() * 100),
-                (int) (this.model.getFactors().getRabbitStarveRatio() * 100),
-                (int) (this.model.getFactors().getRabbitDieRatio() * 100));
-
-        this.view.getParametersFrame().initWolfRatios(
-                (int) (this.model.getFactors().getWolfReproducingRatio() * 100),
-                (int) (this.model.getFactors().getWolfStarveRatio() * 100),
-                (int) (this.model.getFactors().getWolfDieRatio() * 100));
-
-        this.view.getParametersFrame().initCheckboxes(
-                this.model.getOptions().canReproduce(),
-                this.model.getOptions().canRandomlyDie(),
-                this.model.getOptions().canStarve(),
-                this.model.getOptions().canGrowGrass());
-
-        this.view.getParametersFrame().addUpdateButtonListener(updateListener);
-        this.view.getParametersFrame().addResetButtonListener(resetListener);
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                while (getParameters().isStarted()) {
+                    this.simulate();
+                    this.updatePlot();
+                    Thread.sleep(this.model.getFactors().getSimulationInterval());
+                }
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GrowingPopulations.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     synchronized public void simulate() {
-        WolvesRabbitsMap map = this.model.getMap();
         Factors factors = this.model.getFactors();
         Options options = this.model.getOptions();
 
-        if (options.canRandomlyDie()) {
-//            this.model.getMap().dieRabbits();
-//            this.model.getMap().dieWolves();
-        }
-
         if (options.canStarve()) {
-            map.increaseRabbitsStarvation(factors.getRabbitStarveRatio());
-            map.increaseWolvesStarvation(factors.getWolfStarveRatio());
+            getModelMap().increaseRabbitsStarvation(getRabbitRatios().getStarve());
+            getModelMap().increaseWolvesStarvation(getWolfRatios().getStarve());
         }
 
         if (options.canReproduce()) {
-            map.reproduceRabbits(factors.getRabbitReproducingRatio(),
+            getModelMap().reproduceRabbits(
+                    getRabbitRatios().getReproduce(),
                     this.model.calculateMaxRabbitsCount());
-            map.reproduceWolves(factors.getWolfReproducingRatio(),
+            getModelMap().reproduceWolves(
+                    getWolfRatios().getReproduce(),
                     this.model.calculateMaxWolvesCount());
         }
 
         if (options.canGrowGrass()) {
-            map.growGrass(factors.getGrowGrassRatio());
+            getModelMap().growGrass(factors.getGrowGrassRatio());
         }
 
-        map.moveWolves();
-        map.moveRabbits();
-        map.agingProcess();
-        map.updateDeaths();
+        getModelMap().moveWolves();
+        getModelMap().moveRabbits();
+        getModelMap().agingProcess();
+        getModelMap().updateDeaths();
 
         this.drawMap();
     }
@@ -100,75 +116,42 @@ public class Controller {
     private void drawMap() {
         synchronized (Controller.class) {
             this.view.getMapPanel().drawAll(
-                    this.model.getMap().getNoAnimalsCoordinates(),
-                    this.model.getMap().getWolvesCoordinates(),
-                    this.model.getMap().getRabbitsCoordinates());
+                    getModelMap().getNoAnimalsCoordinates(),
+                    getModelMap().getWolvesCoordinatesCopy(),
+                    getModelMap().getRabbitsCoordinatesCopy());
         }
     }
 
     public void updatePlot() {
-        this.view.getPlot().addAnimalsAmount(this.model.getMap().getRabbitsCount(),
-                this.model.getMap().getWolvesCount());
+        view.getPlot().addAnimalsAmount(getModelMap().getRabbitsCount(), getModelMap().getWolvesCount());
     }
 
-    private class UpdateListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            synchronized (Controller.class) {
-                updateParameters();
-            }
-        }
-
-        private void updateParameters() {
-            ParametersFrame parameters = view.getParametersFrame();
-            Factors factors = model.getFactors();
-            Options options = model.getOptions();
-
-            factors.setSimulationInterval(parameters.getSimulationInterval());
-            factors.setGrowGrassRatio(parameters.getGrowGrassRatio());
-
-            //checkboxes: reproduce, starve, dieRandomly, growGrass
-            options.setCanReproduce(parameters.canReproduce());
-            options.setCanStarve(parameters.canStarve());
-            options.setRandomlyDie(parameters.canDie());
-            options.setCanGrowGrass(parameters.canGrowGrass());
-
-            //wolf&rabbit: reproduce, dieRandomly, starve
-            factors.setWolfReproducingRatio(parameters.getWolfReproduceRatio());
-            factors.setWolfDieRatio(parameters.getWolfDieRatio());
-            factors.setWolfStarveRatio(parameters.getWolfStarveRatio());
-            factors.setRabbitReproducingRatio(parameters.getRabbitReproduceRatio());
-            factors.setRabbitDieRatio(parameters.getRabbitDieRatio());
-            factors.setRabbitStarveRatio(parameters.getRabbitStarveRatio());
-        }
-
+    private void resetParameters() {
+        getParameters().setMapWidth(getParametersFrame().getMapWidth());
+        getParameters().setMapHeight(getParametersFrame().getMapHeight());
+        getParameters().setRabbitsCount(getParametersFrame().getRabbitsCount());
+        getParameters().setWolvesCount(getParametersFrame().getWolvesCount());
+        updateModelParameters();
+        model.reinitializeMap();
+        view.getPlot().reinitialize();
+        view.getMapPanel().reinitialize(getParameters().getMapWidth(), getParameters().getMapHeight());
+        drawMap();
+        view.getSplitPane().getTopComponent().repaint();
     }
 
-    private class ResetListener implements ActionListener {
+    private void updateModelParameters() {
+        model.getOptions().setCanReproduce(getParametersFrame().canReproduce());
+        model.getOptions().setCanStarve(getParametersFrame().canStarve());
+        model.getOptions().setCanGrowGrass(getParametersFrame().canGrowGrass());
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            synchronized (Controller.class) {
-                resetParameters();
-                view.getPlot().reset();
-                view.getMapPanel().generateMapPanel(
-                        model.getParameters().getMapWidth(),
-                        model.getParameters().getMapHeight());
-                drawMap();
-                view.getSplitPane().getTopComponent().repaint();
-            }
-        }
+        model.getFactors().setSimulationInterval(getParametersFrame().getSimulationInterval());
+        model.getFactors().setGrowGrassRatio(getParametersFrame().getGrowGrassRatio());
 
-        public void resetParameters() {
-            model.getParameters().setMapWidth(view.getParametersFrame().getMapWidth());
-            model.getParameters().setMapHeight(view.getParametersFrame().getMapHeight());
-            model.getParameters().setRabbitsCount(view.getParametersFrame().getRabbitsCount());
-            model.getParameters().setWolvesCount(view.getParametersFrame().getWolvesCount());
-            updateListener.updateParameters();
-            model.resetMap();
-        }
+        getWolfRatios().setReproduce(getParametersFrame().getWolfReproduceRatio());
+        getWolfRatios().setStarve(getParametersFrame().getWolfStarveRatio());
 
+        getRabbitRatios().setReproduce(getParametersFrame().getRabbitReproduceRatio());
+        getRabbitRatios().setStarve(getParametersFrame().getRabbitStarveRatio());
     }
 
     private class StartListener implements ActionListener {
@@ -176,10 +159,9 @@ public class Controller {
         @Override
         public void actionPerformed(ActionEvent e) {
             view.getStartPauseButton().setText("Start");
-            model.getParameters().setStarted(false);
+            getParameters().setStarted(false);
             view.addStartPauseButtonListener(pauseListener);
         }
-
     }
 
     private class PauseListener implements ActionListener {
@@ -187,10 +169,30 @@ public class Controller {
         @Override
         public void actionPerformed(ActionEvent e) {
             view.getStartPauseButton().setText("Pauza");
-            model.getParameters().setStarted(true);
+            getParameters().setStarted(true);
             view.addStartPauseButtonListener(startListener);
         }
+    }
 
+    // ----------------------- getters & setters -----------------------
+    private WolvesRabbitsMap getModelMap() {
+        return this.model.getMap();
+    }
+
+    private Parameters getParameters() {
+        return this.model.getParameters();
+    }
+
+    private ParametersFrame getParametersFrame() {
+        return this.view.getParametersFrame();
+    }
+
+    private Ratios getWolfRatios() {
+        return this.model.getFactors().getWolfRatios();
+    }
+
+    private Ratios getRabbitRatios() {
+        return this.model.getFactors().getRabbitRatios();
     }
 
 }

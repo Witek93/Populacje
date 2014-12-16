@@ -30,12 +30,11 @@ public class Plot extends ChartPanel {
                 this.seriesCollection, PlotOrientation.VERTICAL, true, true, false);
 
         this.setChart(this.lineChart);
-        this.setChart(this.lineChart);
         this.setMinimumSize(new Dimension(200, 200));
         this.setSize(400, 300);
     }
 
-    public void reset() {
+    public void reinitialize() {
         this.seriesCollection.removeAllSeries();
         this.addSeries("Populacja królików", "króliki");
         this.addSeries("Populacja wilków", "wilki");

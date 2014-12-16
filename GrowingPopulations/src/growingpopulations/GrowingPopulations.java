@@ -13,7 +13,8 @@ public class GrowingPopulations implements Runnable {
     Controller controller;
 
     public static void main(String[] args) throws InterruptedException {
-        Thread thread = new Thread(new GrowingPopulations());
+        GrowingPopulations instance = new GrowingPopulations();
+        Thread thread = new Thread(instance.controller);
         thread.start();
     }
 
@@ -21,24 +22,24 @@ public class GrowingPopulations implements Runnable {
         this.view = new MainFrame("Symulacje populacji");
         this.model = new Model();
         this.controller = new Controller(this.view, this.model);
-        this.view.getMapPanel().generateMapPanel(
+        this.view.getMapPanel().reinitialize(
                 this.model.getParameters().getMapWidth(), 
                 this.model.getParameters().getMapHeight());
     }
 
     @Override
     public void run() {
-        while (true) {
-            try {
-                while (this.model.getParameters().isStarted()) {
-                    this.controller.simulate();
-                    this.controller.updatePlot();
-                    Thread.sleep(this.model.getFactors().getSimulationInterval());
-                }
-            } catch (InterruptedException ex) {
-                Logger.getLogger(GrowingPopulations.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+//        while (true) {
+//            try {
+//                while (this.model.getParameters().isStarted()) {
+//                    this.controller.simulate();
+//                    this.controller.updatePlot();
+//                    Thread.sleep(this.model.getFactors().getSimulationInterval());
+//                }
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(GrowingPopulations.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
     }
 
 }

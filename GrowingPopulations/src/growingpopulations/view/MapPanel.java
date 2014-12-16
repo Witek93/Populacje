@@ -17,12 +17,12 @@ public class MapPanel extends JPanel {
         super();
         this.width = 0;
         this.height = 0;
-        this.wolfColor = Color.red;
-        this.rabbitColor = Color.gray;
+        this.wolfColor = Color.blue;
+        this.rabbitColor = Color.red;
         this.grassColor = Color.green;
     }
 
-    synchronized public void generateMapPanel(int width, int height) {
+    synchronized public void reinitialize(int width, int height) {
         this.width = width;
         this.height = height;
 
@@ -43,7 +43,7 @@ public class MapPanel extends JPanel {
         }
     }
 
-    public void drawAll(List<Point> noAnimals, List<Point> wolves, List<Point> rabbits) {
+    public void drawAll(Point[] noAnimals, Point[] wolves, Point[] rabbits) {
         for (Point p : wolves) {
             this.fields[p.x][p.y].setBackground(wolfColor);
         }

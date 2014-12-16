@@ -2,11 +2,10 @@ package growingpopulations.model;
 
 public class Options {
 
-    private volatile boolean reproduce, randomlyDie, starve, growGrass;
+    private volatile boolean reproduce, starve, growGrass;
 
     public Options() {
         this.reproduce = true;
-        this.randomlyDie = true;
         this.starve = true;
         this.growGrass = true;
     }
@@ -17,14 +16,6 @@ public class Options {
 
     public void setCanReproduce(boolean canReproduce) {
         this.reproduce = canReproduce;
-    }
-
-    public boolean canRandomlyDie() {
-        return randomlyDie;
-    }
-
-    public void setRandomlyDie(boolean randomlyDie) {
-        this.randomlyDie = randomlyDie;
     }
 
     public boolean canStarve() {

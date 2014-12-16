@@ -4,7 +4,7 @@ import growingpopulations.model.map.WolvesRabbitsMap;
 
 public class Model {
 
-    volatile private Parameters parameters;
+    private final Parameters parameters;
     private final Options options;
     private final Factors factors;
     private WolvesRabbitsMap map;
@@ -18,7 +18,7 @@ public class Model {
                 parameters.getWolvesCount(), parameters.getRabbitsCount());
     }
 
-    public final void resetMap() {
+    public final void reinitializeMap() {
         this.map = new WolvesRabbitsMap(
                 parameters.getMapWidth(), parameters.getMapHeight(),
                 parameters.getWolvesCount(), parameters.getRabbitsCount());

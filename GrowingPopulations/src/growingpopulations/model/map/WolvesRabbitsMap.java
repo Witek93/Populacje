@@ -26,7 +26,7 @@ public class WolvesRabbitsMap {
     public void reproduceRabbits(double rabbitReproduceRatio, int maxCount) {
         Direction d = null;
         Point target = null;
-        for (Point p : getRabbitsCoodinatesCopy()) {
+        for (Point p : getRabbitsCoordinatesCopy()) {
             if (getRabbitsCount() >= maxCount || fields[p.x][p.y].animal.isHungry()) {
                 return;
             }
@@ -43,7 +43,7 @@ public class WolvesRabbitsMap {
     public void reproduceWolves(double wolvesReproduceRatio, int maxCount) {
         Direction d = null;
         Point target = null;
-        for (Point p : getWolvesCoodinatesCopy()) {
+        for (Point p : getWolvesCoordinatesCopy()) {
             if (getWolvesCount() >= maxCount || fields[p.x][p.y].animal.isHungry()) {
                 return;
             }
@@ -58,39 +58,39 @@ public class WolvesRabbitsMap {
     }
 
     public void increaseWolvesStarvation(double wolfStarveRatio) {
-        for (Point p : getWolvesCoodinatesCopy()) {
+        for (Point p : getWolvesCoordinatesCopy()) {
             assert !hasNoAnimal(p);
             fields[p.x][p.y].getAnimal().increaseStarvingLevel(wolfStarveRatio);
         }
     }
 
     public void increaseRabbitsStarvation(double rabbitStarveRatio) {
-        for (Point p : getRabbitsCoodinatesCopy()) {
+        for (Point p : getRabbitsCoordinatesCopy()) {
             assert !hasNoAnimal(p);
             fields[p.x][p.y].getAnimal().increaseStarvingLevel(rabbitStarveRatio);
         }
     }
 
     public void agingProcess(Point[] animals) {
-        for (Point p : getRabbitsCoodinatesCopy()) {
+        for (Point p : getRabbitsCoordinatesCopy()) {
             assert !hasNoAnimal(p);
             fields[p.x][p.y].getAnimal().increaseAge();
         }
     }
 
     public void agingProcess() {
-        agingProcess(getRabbitsCoodinatesCopy());
-        agingProcess(getWolvesCoodinatesCopy());
+        agingProcess(getRabbitsCoordinatesCopy());
+        agingProcess(getWolvesCoordinatesCopy());
     }
 
     public void updateDeaths() {
-        for (Point p : getRabbitsCoodinatesCopy()) {
+        for (Point p : getRabbitsCoordinatesCopy()) {
             assert !hasNoAnimal(p);
             if (fields[p.x][p.y].getAnimal().shouldDie()) {
                 removeRabbit(p);
             }
         }
-        for (Point p : getWolvesCoodinatesCopy()) {
+        for (Point p : getWolvesCoordinatesCopy()) {
             assert !hasNoAnimal(p);
             if (fields[p.x][p.y].getAnimal().shouldDie()) {
                 removeWolf(p);
@@ -99,14 +99,14 @@ public class WolvesRabbitsMap {
     }
 
     public void moveRabbits() {
-        for (Point p : getRabbitsCoodinatesCopy()) {
+        for (Point p : getRabbitsCoordinatesCopy()) {
             assert !hasNoAnimal(p);
             rabbitsMove(p, randomDirection());
         }
     }
 
     public void moveWolves() {
-        for (Point p : getWolvesCoodinatesCopy()) {
+        for (Point p : getWolvesCoordinatesCopy()) {
             assert !hasNoAnimal(p);
             Point rabbit = findRabbit(p); //TODO
             if (rabbit == null) {
@@ -256,11 +256,11 @@ public class WolvesRabbitsMap {
         return wolvesCoordinates;
     }
 
-    public Point[] getWolvesCoodinatesCopy() {
+    public Point[] getWolvesCoordinatesCopy() {
         return wolvesCoordinates.toArray(new Point[wolvesCoordinates.size()]);
     }
 
-    public Point[] getRabbitsCoodinatesCopy() {
+    public Point[] getRabbitsCoordinatesCopy() {
         return rabbitsCoordinates.toArray(new Point[rabbitsCoordinates.size()]);
     }
 
@@ -346,7 +346,7 @@ public class WolvesRabbitsMap {
         return directions[generator.nextInt(directions.length)];
     }
 
-    public List<Point> getNoAnimalsCoordinates() {
+    public Point[] getNoAnimalsCoordinates() {
         List<Point> points = new ArrayList<>(width * height);
         for (int i = 0; i < this.width; i++) {
             for (int j = 0; j < this.height; j++) {
@@ -355,7 +355,7 @@ public class WolvesRabbitsMap {
         }
         points.removeAll(rabbitsCoordinates);
         points.removeAll(wolvesCoordinates);
-        return points;
+        return points.toArray(new Point[points.size()]);
     }
 
 }
