@@ -1,12 +1,10 @@
 package growingpopulations.model;
 
-public class SimulationOptions {
+public class Options {
 
     private volatile boolean reproduce, randomlyDie, starve, growGrass;
 
-    public SimulationOptions() {
-        // if u want to set these values to false then implement some sort of 
-        // initial communication for CheckBoxes in MenuBar (they are set to true)
+    public Options() {
         this.reproduce = true;
         this.randomlyDie = true;
         this.starve = true;

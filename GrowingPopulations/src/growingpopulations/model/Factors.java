@@ -1,13 +1,13 @@
 package growingpopulations.model;
 
-public class SimulationFactors {
+public class Factors {
 
     volatile private double wolfReproducingRatio, wolfStarveRatio, wolfDieRatio;
     volatile private double rabbitReproducingRatio, rabbitStarveRatio, rabbitDieRatio;
     volatile private double growGrassRatio;
     volatile private int simulationInterval;
 
-    public SimulationFactors() {
+    public Factors() {
         this.wolfReproducingRatio = 0.20;
         this.wolfStarveRatio = 0.05;
         this.wolfDieRatio = 0.1;

@@ -21,17 +21,19 @@ public class GrowingPopulations implements Runnable {
         this.view = new MainFrame("Symulacje populacji");
         this.model = new Model();
         this.controller = new Controller(this.view, this.model);
-        this.view.getMapPanel().generateMapPanel(this.model.getMapWidth(), this.model.getMapHeight());
+        this.view.getMapPanel().generateMapPanel(
+                this.model.getParameters().getMapWidth(), 
+                this.model.getParameters().getMapHeight());
     }
 
     @Override
     public void run() {
         while (true) {
             try {
-                while (this.model.isStarted()) {
+                while (this.model.getParameters().isStarted()) {
                     this.controller.simulate();
                     this.controller.updatePlot();
-                    Thread.sleep(this.model.getSimulationInterval());
+                    Thread.sleep(this.model.getFactors().getSimulationInterval());
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(GrowingPopulations.class.getName()).log(Level.SEVERE, null, ex);
